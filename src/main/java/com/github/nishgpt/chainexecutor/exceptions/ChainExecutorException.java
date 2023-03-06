@@ -23,7 +23,7 @@ public class ChainExecutorException extends RuntimeException {
   }
 
   public static ChainExecutorException error(final ErrorCode errorCode) {
-    return new ChainExecutorException(errorCode, null, null);
+    return new ChainExecutorException(errorCode, ERROR_OCCURRED_MESSAGE, null);
   }
 
   public static ChainExecutorException propagate(final ErrorCode errorCode, final Throwable cause) {
