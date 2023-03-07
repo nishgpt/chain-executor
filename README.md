@@ -1,5 +1,6 @@
 # chain-executor
-Library to enable execution of a linear chain of logical stages
+A library that lets you define and **chain** multiple stages in a linear fashion and helps you execute the same against a context. 
+You can register multiple chains against identifiers and execute one as needed. 
 
 ### Maven Dependency
 
