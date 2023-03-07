@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.github.nishgpt</groupId>
+  <artifactId>chain-executor</artifactId>
+  <version>0.0.1</version>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <email>nishant141077@gmail.com</email>
+      <id>nishgpt</id>
+      <name>Nishant Gupta</name>
+    </developer>
+  </developers>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <java.version>17</java.version>
+    <lombok.version>1.18.24</lombok.version>
+    <lombok.maven.version>1.18.20.0</lombok.maven.version>
+    <slf4j.version>1.7.36</slf4j.version>
+    <guice.version>5.1.0</guice.version>
+    <reflections.version>0.9.9</reflections.version>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <distributionManagement>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars repository</name>
+      <url>https://clojars.org/repo</url>
+    </repository>
+  </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <release>${java.version}</release>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <artifactId>asm</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <version>7.2</version>
+          </dependency>
+        </dependencies>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.8.1</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <id>attach-sources</id>
+          </execution>
+        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.2.0</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <scope>compile</scope>
+      <version>${lombok.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>slf4j-api</artifactId>
+      <groupId>org.slf4j</groupId>
+      <scope>compile</scope>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+      <version>${guice.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>reflections</artifactId>
+      <groupId>org.reflections</groupId>
+      <version>${reflections.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>
