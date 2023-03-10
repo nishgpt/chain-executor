@@ -114,7 +114,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     final var updatedContext = (U) executor.postExecution(context);
 
     //check for further stages and init the first initable stage
-    var nextStage = chainRegistry.getNextStageChain(chainIdentifier,
+    var nextStage = chainRegistry.getNextStage(chainIdentifier,
         stageExecutorKey.getStage());
 
     while (Objects.nonNull(nextStage)) {
@@ -125,7 +125,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       if (!nextExecutor.getStageStatus(updatedContext).isCompleted()) {
         break;
       }
-      nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
+      nextStage = chainRegistry.getNextStage(chainIdentifier, nextStage);
     }
 
     // if last stage has completed: revisit for a more concrete check
@@ -151,7 +151,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       if (!executor.getStageStatus(context).isCompleted()) {
         break;
       }
-      currentStage = chainRegistry.getNextStageChain(chainIdentifier, currentStage);
+      currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     } while (Objects.nonNull(currentStage));
 
     return currentStage;
@@ -177,7 +177,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       if (!executor.getStageStatus(context).isCompleted()) {
         break;
       }
-      currentStage = chainRegistry.getNextStageChain(chainIdentifier, currentStage);
+      currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     }
   }
 }
