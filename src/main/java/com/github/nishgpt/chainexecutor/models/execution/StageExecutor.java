@@ -49,6 +49,13 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
   void validateStatus(T context);
 
   /**
+   * Checks if the stage can be skipped
+   *
+   * @return
+   */
+  T skipIfApplicable(T context);
+
+  /**
    * Gets stage status
    *
    * @param context

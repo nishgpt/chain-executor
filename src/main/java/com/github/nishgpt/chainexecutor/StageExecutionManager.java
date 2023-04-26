@@ -43,10 +43,11 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       final var executor = executorFactory.getExecutor(stageExecutorKey);
       final var currentStatus = executor.getStageStatus(context);
 
-      //Init this stage if not initiated
+      //Init this stage if not initiated and can't be skipped
       if (currentStatus.isNotInitiated()) {
         log.info("Initiating {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
-        context = (U) executor.init(context);
+        final var updatedContext = (U) executor.skipIfApplicable(context);
+        context = executor.getStageStatus(updatedContext).isSkipped() ? updatedContext : (U) executor.init(updatedContext);
       }
 
       //If the stage is already Failed, skip execution
@@ -54,17 +55,19 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         return context;
       }
 
-      //Execute this stage
-      log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
-      var executedContext = (U) executor.execute(context, request);
+      if (!currentStatus.isSkipped()) {
+        //Execute this stage
+        log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
+        context = (U) executor.execute(context, request);
+      }
 
       //If execution is not completed, expect a call to resume flow
-      if (!executor.getStageStatus(executedContext).isCompleted()) {
-        return executedContext;
+      if (executor.getStageStatus(context).isExecutable()) {
+        return context;
       }
 
       //Otherwise, perform post completion actions
-      return performPostCompletionSteps(executedContext, executor, stageExecutorKey,
+      return performPostCompletionSteps(context, executor, stageExecutorKey,
           chainIdentifier);
     } catch (ChainExecutorException e) {
       throw e;
@@ -122,7 +125,13 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
       //validate status and check completion
       nextExecutor.validateStatus(updatedContext);
-      if (!nextExecutor.getStageStatus(updatedContext).isCompleted()) {
+
+      //check if stage can be skipped
+      if (!nextExecutor.getStageStatus(updatedContext).isNotInitiated()) {
+        executor.skipIfApplicable(updatedContext);
+      }
+
+      if (nextExecutor.getStageStatus(updatedContext).isExecutable()) {
         break;
       }
       nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
