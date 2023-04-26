@@ -127,8 +127,8 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       nextExecutor.validateStatus(updatedContext);
 
       //check if stage can be skipped
-      if (!nextExecutor.getStageStatus(updatedContext).isNotInitiated()) {
-        executor.skipIfApplicable(updatedContext);
+      if (nextExecutor.getStageStatus(updatedContext).isNotInitiated()) {
+        nextExecutor.skipIfApplicable(updatedContext);
       }
 
       if (nextExecutor.getStageStatus(updatedContext).isExecutable()) {
