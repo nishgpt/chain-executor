@@ -37,6 +37,10 @@ public enum StageStatus {
   }
 
   public boolean isExecutable() {
-    return !Set.of(COMPLETED, SKIPPED).contains(this);
+    return Set.of(NOT_INITIATED, INITIATED, ERRORRED).contains(this);
+  }
+
+  public boolean isProcessedSuccessfully() {
+    return Set.of(COMPLETED, SKIPPED).contains(this);
   }
 }

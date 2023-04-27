@@ -53,7 +53,9 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
    *
    * @return
    */
-  T skipIfApplicable(T context);
+  default T skipIfApplicable(T context) {
+    return context;
+  }
 
   /**
    * Gets stage status

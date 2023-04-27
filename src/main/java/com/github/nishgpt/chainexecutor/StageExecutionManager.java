@@ -45,30 +45,34 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
       //Init this stage if not initiated and can't be skipped
       if (currentStatus.isNotInitiated()) {
-        log.info("Initiating {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
         final var updatedContext = (U) executor.skipIfApplicable(context);
-        context = executor.getStageStatus(updatedContext).isSkipped() ? updatedContext : (U) executor.init(updatedContext);
+        if(executor.getStageStatus(updatedContext).isSkipped()) {
+          context = updatedContext;
+          log.info("Skipped {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
+        } else {
+          log.info("Initiating {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
+          context = (U) executor.init(context);
+        }
       }
 
-      //If the stage is already Failed, skip execution
+      //If the stage is already Failed, break execution here
       if (currentStatus.isFailed()) {
         return context;
       }
 
-      if (!currentStatus.isSkipped()) {
+      if (currentStatus.isExecutable()) {
         //Execute this stage
         log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
         context = (U) executor.execute(context, request);
       }
 
-      //If execution is not completed, expect a call to resume flow
-      if (executor.getStageStatus(context).isExecutable()) {
-        return context;
-      }
-
+      //If stage has not been processed, expect a call to resume flow
       //Otherwise, perform post completion actions
-      return performPostCompletionSteps(context, executor, stageExecutorKey,
-          chainIdentifier);
+      if (executor.getStageStatus(context).isProcessedSuccessfully()) {
+        return performPostCompletionSteps(context, executor, stageExecutorKey,
+            chainIdentifier);
+      }
+      return context;
     } catch (ChainExecutorException e) {
       throw e;
     } catch (Exception e) {
