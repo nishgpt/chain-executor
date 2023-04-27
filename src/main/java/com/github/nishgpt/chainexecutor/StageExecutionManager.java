@@ -135,7 +135,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         nextExecutor.skipIfApplicable(updatedContext);
       }
 
-      if (nextExecutor.getStageStatus(updatedContext).isExecutable()) {
+      if (!nextExecutor.getStageStatus(updatedContext).isCompletedOrSkipped()) {
         break;
       }
       nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
