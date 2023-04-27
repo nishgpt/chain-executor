@@ -1,5 +1,6 @@
 package com.github.nishgpt.chainexecutor.models.stage;
 
+import java.util.Set;
 import lombok.Getter;
 
 @Getter
@@ -7,6 +8,7 @@ public enum StageStatus {
   NOT_INITIATED,
   INITIATED,
   COMPLETED,
+  SKIPPED,
   FAILED,
   ERRORRED;
 
@@ -30,4 +32,15 @@ public enum StageStatus {
     return NOT_INITIATED.equals(this);
   }
 
+  public boolean isSkipped() {
+    return SKIPPED.equals(this);
+  }
+
+  public boolean isExecutable() {
+    return Set.of(NOT_INITIATED, INITIATED, ERRORRED).contains(this);
+  }
+
+  public boolean isCompletedOrSkipped() {
+    return Set.of(COMPLETED, SKIPPED).contains(this);
+  }
 }

@@ -43,29 +43,36 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       final var executor = executorFactory.getExecutor(stageExecutorKey);
       final var currentStatus = executor.getStageStatus(context);
 
-      //Init this stage if not initiated
+      //Init this stage if not initiated and can't be skipped
       if (currentStatus.isNotInitiated()) {
-        log.info("Initiating {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
-        context = (U) executor.init(context);
+        final var updatedContext = (U) executor.skipIfApplicable(context);
+        if(executor.getStageStatus(updatedContext).isSkipped()) {
+          context = updatedContext;
+          log.info("Skipped {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
+        } else {
+          log.info("Initiating {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
+          context = (U) executor.init(context);
+        }
       }
 
-      //If the stage is already Failed, skip execution
+      //If the stage is already Failed, break execution here
       if (currentStatus.isFailed()) {
         return context;
       }
 
-      //Execute this stage
-      log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
-      var executedContext = (U) executor.execute(context, request);
-
-      //If execution is not completed, expect a call to resume flow
-      if (!executor.getStageStatus(executedContext).isCompleted()) {
-        return executedContext;
+      if (currentStatus.isExecutable()) {
+        //Execute this stage
+        log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
+        context = (U) executor.execute(context, request);
       }
 
+      //If stage has not been processed, expect a call to resume flow
       //Otherwise, perform post completion actions
-      return performPostCompletionSteps(executedContext, executor, stageExecutorKey,
-          chainIdentifier);
+      if (executor.getStageStatus(context).isCompletedOrSkipped()) {
+        return performPostCompletionSteps(context, executor, stageExecutorKey,
+            chainIdentifier);
+      }
+      return context;
     } catch (ChainExecutorException e) {
       throw e;
     } catch (Exception e) {
@@ -122,7 +129,13 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
       //validate status and check completion
       nextExecutor.validateStatus(updatedContext);
-      if (!nextExecutor.getStageStatus(updatedContext).isCompleted()) {
+
+      //check if stage can be skipped
+      if (nextExecutor.getStageStatus(updatedContext).isNotInitiated()) {
+        nextExecutor.skipIfApplicable(updatedContext);
+      }
+
+      if (!nextExecutor.getStageStatus(updatedContext).isCompletedOrSkipped()) {
         break;
       }
       nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
