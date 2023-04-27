@@ -40,7 +40,7 @@ public enum StageStatus {
     return Set.of(NOT_INITIATED, INITIATED, ERRORRED).contains(this);
   }
 
-  public boolean isProcessedSuccessfully() {
+  public boolean isCompletedOrSkipped() {
     return Set.of(COMPLETED, SKIPPED).contains(this);
   }
 }

@@ -68,7 +68,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
       //If stage has not been processed, expect a call to resume flow
       //Otherwise, perform post completion actions
-      if (executor.getStageStatus(context).isProcessedSuccessfully()) {
+      if (executor.getStageStatus(context).isCompletedOrSkipped()) {
         return performPostCompletionSteps(context, executor, stageExecutorKey,
             chainIdentifier);
       }
