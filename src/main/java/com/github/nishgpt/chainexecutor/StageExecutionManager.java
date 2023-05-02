@@ -161,7 +161,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     do {
       final var executor = getExecutor(currentStage, auxiliaryKey);
-      if (!executor.getStageStatus(context).isCompleted()) {
+      if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
         break;
       }
       currentStage = chainRegistry.getNextStageChain(chainIdentifier, currentStage);
