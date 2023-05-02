@@ -186,7 +186,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       final var executor = getExecutor(currentStage, auxiliaryKey);
       executor.validateStatus(context);
 
-      //break if stage is not completed
+      //break if stage is not completed or skipped
       if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
         break;
       }
