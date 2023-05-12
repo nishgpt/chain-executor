@@ -121,39 +121,52 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     final var updatedContext = (U) executor.postExecution(context);
 
     //check for further stages and init the first initable stage
-    var nextStage = chainRegistry.getNextStageChain(chainIdentifier,
-        stageExecutorKey.getStage());
+    return initNext(stageExecutorKey, chainIdentifier, updatedContext);
+  }
 
-    while (Objects.nonNull(nextStage)) {
-      final var nextExecutor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
+  @SuppressWarnings("unchecked")
+  public U initNext(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context)
+      throws ChainExecutorException {
+    try {
+      var nextStage = chainRegistry.getNextStageChain(chainIdentifier,
+          stageExecutorKey.getStage());
 
-      //validate status and check completion
-      nextExecutor.validateStatus(updatedContext);
+      while (Objects.nonNull(nextStage)) {
+        final var nextExecutor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
 
-      //check if stage can be skipped
-      if (nextExecutor.getStageStatus(updatedContext).isNotInitiated()) {
-        nextExecutor.skipIfApplicable(updatedContext);
+        //validate status and check completion
+        nextExecutor.validateStatus(context);
+
+        //check if stage can be skipped
+        if (nextExecutor.getStageStatus(context).isNotInitiated()) {
+          nextExecutor.skipIfApplicable(context);
+        }
+
+        if (!nextExecutor.getStageStatus(context).isCompletedOrSkipped()) {
+          break;
+        }
+        nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
       }
 
-      if (!nextExecutor.getStageStatus(updatedContext).isCompletedOrSkipped()) {
-        break;
+      // if last stage has completed: revisit for a more concrete check
+      if (Objects.isNull(nextStage)) {
+        return finishExecution(context);
       }
-      nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
-    }
 
-    // if last stage has completed: revisit for a more concrete check
-    if (Objects.isNull(nextStage)) {
-      return finishExecution(context);
-    }
+      //If stage is not initiated, call init
+      if (getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey())
+          .getStageStatus(context).isNotInitiated()) {
+        log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
+        return (U) getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey()).init(context);
+      }
 
-    //If stage is not initiated, call init
-    if (getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey())
-        .getStageStatus(updatedContext).isNotInitiated()) {
-      log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
-      return (U) getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey()).init(updatedContext);
+      return context;
+    } catch (ChainExecutorException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("Error executing stage {}", stageExecutorKey.getStage());
+      throw ChainExecutorException.propagate(ErrorCode.EXECUTION_ERROR, e);
     }
-
-    return updatedContext;
   }
 
   @SuppressWarnings("unchecked")
