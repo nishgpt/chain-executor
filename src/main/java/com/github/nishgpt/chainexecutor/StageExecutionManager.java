@@ -117,7 +117,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   public U initNext(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
 
     try {
-      var nextStage = chainRegistry.getNextStageChain(chainIdentifier,
+      var nextStage = chainRegistry.getNextStage(chainIdentifier,
           stageExecutorKey.getStage());
 
       while (Objects.nonNull(nextStage)) {
@@ -134,7 +134,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         if (!nextExecutor.getStageStatus(context).isCompletedOrSkipped()) {
           break;
         }
-        nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
+        nextStage = chainRegistry.getNextStage(chainIdentifier, nextStage);
       }
 
       // if last stage has completed: revisit for a more concrete check
@@ -159,14 +159,14 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
-  public T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
+  private T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     do {
       final var executor = getExecutor(currentStage, auxiliaryKey);
       if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
         break;
       }
-      currentStage = chainRegistry.getNextStageChain(chainIdentifier, currentStage);
+      currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     } while (Objects.nonNull(currentStage));
 
     return currentStage;
@@ -192,7 +192,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
         break;
       }
-      currentStage = chainRegistry.getNextStageChain(chainIdentifier, currentStage);
+      currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     }
   }
 
