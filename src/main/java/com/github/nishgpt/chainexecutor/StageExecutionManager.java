@@ -114,57 +114,59 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   protected abstract U finishExecution(U context);
 
   @SuppressWarnings("unchecked")
-  private U performPostCompletionSteps(U context, StageExecutor executor,
-      StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier) {
+  public U initNext(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
 
-    //Post execution processing, if any
-    final var updatedContext = (U) executor.postExecution(context);
+    try {
+      var nextStage = chainRegistry.getNextStage(chainIdentifier,
+          stageExecutorKey.getStage());
 
-    //check for further stages and init the first initable stage
-    var nextStage = chainRegistry.getNextStageChain(chainIdentifier,
-        stageExecutorKey.getStage());
+      while (Objects.nonNull(nextStage)) {
+        final var nextExecutor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
 
-    while (Objects.nonNull(nextStage)) {
-      final var nextExecutor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
+        //validate status and check completion
+        nextExecutor.validateStatus(context);
 
-      //validate status and check completion
-      nextExecutor.validateStatus(updatedContext);
+        //check if stage can be skipped
+        if (nextExecutor.getStageStatus(context).isNotInitiated()) {
+          nextExecutor.skipIfApplicable(context);
+        }
 
-      //check if stage can be skipped
-      if (nextExecutor.getStageStatus(updatedContext).isNotInitiated()) {
-        nextExecutor.skipIfApplicable(updatedContext);
+        if (!nextExecutor.getStageStatus(context).isCompletedOrSkipped()) {
+          break;
+        }
+        nextStage = chainRegistry.getNextStage(chainIdentifier, nextStage);
       }
 
-      if (!nextExecutor.getStageStatus(updatedContext).isCompletedOrSkipped()) {
-        break;
+      // if last stage has completed: revisit for a more concrete check
+      if (Objects.isNull(nextStage)) {
+        return finishExecution(context);
       }
-      nextStage = chainRegistry.getNextStageChain(chainIdentifier, nextStage);
-    }
 
-    // if last stage has completed: revisit for a more concrete check
-    if (Objects.isNull(nextStage)) {
-      return finishExecution(context);
-    }
+      //If stage is not initiated, call init
+      if (getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey())
+          .getStageStatus(context).isNotInitiated()) {
+        log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
+        return (U) getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey()).init(context);
+      }
 
-    //If stage is not initiated, call init
-    if (getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey())
-        .getStageStatus(updatedContext).isNotInitiated()) {
-      log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
-      return (U) getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey()).init(updatedContext);
+      return context;
+    } catch (ChainExecutorException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("Error initiating next stage after {}", stageExecutorKey.getStage());
+      throw ChainExecutorException.propagate(ErrorCode.EXECUTION_ERROR, e);
     }
-
-    return updatedContext;
   }
 
   @SuppressWarnings("unchecked")
-  public T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
+  private T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     do {
       final var executor = getExecutor(currentStage, auxiliaryKey);
       if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
         break;
       }
-      currentStage = chainRegistry.getNextStageChain(chainIdentifier, currentStage);
+      currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     } while (Objects.nonNull(currentStage));
 
     return currentStage;
@@ -190,7 +192,18 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
         break;
       }
-      currentStage = chainRegistry.getNextStageChain(chainIdentifier, currentStage);
+      currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private U performPostCompletionSteps(U context, StageExecutor executor,
+      StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier) {
+
+    //Post execution processing, if any
+    final var updatedContext = (U) executor.postExecution(context);
+
+    //check for further stages and init the first initable stage
+    return initNext(stageExecutorKey, chainIdentifier, updatedContext);
   }
 }

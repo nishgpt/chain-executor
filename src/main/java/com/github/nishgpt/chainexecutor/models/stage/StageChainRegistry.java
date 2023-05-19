@@ -15,7 +15,7 @@ public class StageChainRegistry<T extends Stage, K extends StageChainIdentifier>
     return this.get(chainIdentifier);
   }
 
-  public T getNextStageChain(K chainIdentifier, T currentStage) {
+  public T getNextStage(K chainIdentifier, T currentStage) {
     final var chain = getStageChain(chainIdentifier);
     if (Objects.isNull(chain)) {
       return null;
