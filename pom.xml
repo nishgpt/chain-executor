@@ -6,7 +6,7 @@
 
   <groupId>com.github.nishgpt</groupId>
   <artifactId>chain-executor</artifactId>
-  <version>0.0.2.2-RC</version>
+  <version>0.0.2</version>
 
   <licenses>
     <license>
