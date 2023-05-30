@@ -11,7 +11,7 @@ Use the following maven dependency
 <dependency>
   <groupId>com.github.nishgpt</groupId>
   <artifactId>chain-executor</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 
