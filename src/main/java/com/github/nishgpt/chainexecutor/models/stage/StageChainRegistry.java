@@ -20,6 +20,10 @@ public class StageChainRegistry<T extends Stage, K extends StageChainIdentifier>
     if (Objects.isNull(chain)) {
       return null;
     }
+    // To init the first stage
+    if (Objects.isNull(currentStage)) {
+      return chain.getHead();
+    }
     return chain.getForwardChainMappings().get(currentStage);
   }
 
