@@ -22,7 +22,7 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
    * Executes this stage
    *
    * @param context
-   * @param request
+   * @param request In case of background stage, request can be null and should not be used in execution
    * @return
    */
   T execute(T context, U request);
@@ -64,4 +64,14 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
    * @return
    */
   StageStatus getStageStatus(T context);
+
+  /**
+   * Checks if the stage is background
+   *
+   * @param context
+   * @return
+   */
+  default boolean isBackground(T context){
+    return false;
+  }
 }
