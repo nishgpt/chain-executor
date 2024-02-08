@@ -14,9 +14,15 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
   Set<StageExecutorKey<M, K>> getExecutorKeys();
 
   /**
-   * Checks and updates the stage status to INITIATED
+   * Checks and updates the stage status to INITIATED.
+   * This should be used for things which require only one time initiation.
    */
   T init(T context);
+
+  /**
+   * This function should be used to fetch time sensitive info required to be used for execute
+   */
+  T fetchInfo(T context);
 
   /**
    * Executes this stage

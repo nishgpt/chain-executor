@@ -172,6 +172,24 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
+  public U fetchInfo(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
+
+    try {
+      var stage = getFirstNonCompletedStage(chainIdentifier, context,
+              stageExecutorKey.getAuxiliaryKey());
+
+      StageExecutor executor = getExecutor(stage, stageExecutorKey.getAuxiliaryKey());
+
+      return (U) executor.fetchInfo(context);
+    } catch (ChainExecutorException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("Error fetching info for key {}", stageExecutorKey);
+      throw ChainExecutorException.propagate(ErrorCode.EXECUTION_ERROR, e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
   private T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     do {
