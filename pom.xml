@@ -23,6 +23,11 @@
       <id>nishgpt</id>
       <name>Nishant Gupta</name>
     </developer>
+    <developer>
+      <email>rajat.sid25@gmail.com</email>
+      <id>F1reb0lt</id>
+      <name>Sidharth</name>
+    </developer>
   </developers>
 
   <properties>
