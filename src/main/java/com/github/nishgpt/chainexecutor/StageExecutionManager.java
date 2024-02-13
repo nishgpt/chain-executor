@@ -190,7 +190,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
-  private T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
+  protected T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     do {
       final var executor = getExecutor(currentStage, auxiliaryKey);
