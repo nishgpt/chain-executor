@@ -14,15 +14,21 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
   Set<StageExecutorKey<M, K>> getExecutorKeys();
 
   /**
-   * Checks and updates the stage status to INITIATED
+   * Checks and updates the stage status to INITIATED.
+   * This should be used for things which require only one time initiation.
    */
   T init(T context);
+
+  /**
+   * This function should be used to fetch time sensitive info required to be used for execute
+   */
+  T fetchInfo(T context);
 
   /**
    * Executes this stage
    *
    * @param context
-   * @param request
+   * @param request In case of background stage, request can be null and should not be used in execution
    * @return
    */
   T execute(T context, U request);
@@ -64,4 +70,14 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
    * @return
    */
   StageStatus getStageStatus(T context);
+
+  /**
+   * Checks if the stage is background
+   *
+   * @param context
+   * @return
+   */
+  default boolean isBackground(T context){
+    return false;
+  }
 }

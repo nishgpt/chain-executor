@@ -11,6 +11,7 @@ import com.github.nishgpt.chainexecutor.models.execution.StageExecutorKey;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
 import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
 import com.github.nishgpt.chainexecutor.models.stage.StageChainRegistry;
+import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -142,11 +143,23 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         return finishExecution(context);
       }
 
+      StageExecutor executor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
       //If stage is not initiated, call init
-      if (getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey())
-          .getStageStatus(context).isNotInitiated()) {
+      if (executor.getStageStatus(context)
+              .isNotInitiated()) {
         log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
-        return (U) getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey()).init(context);
+        context = (U) executor.init(context);
+      }
+
+      // Background stage. Auto execute
+      if (executor.isBackground(context) && executor.getStageStatus(context)
+              .isExecutable()) {
+        context = (U) executor.execute(context, null);
+        StageStatus stageStatus = executor.getStageStatus(context);
+        if (stageStatus.isCompletedOrSkipped()) {
+          return performPostCompletionSteps(context, executor, stageExecutorKey,
+                  chainIdentifier);
+        }
       }
 
       return context;
@@ -159,7 +172,25 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
-  private T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
+  public U fetchInfo(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
+
+    try {
+      var stage = getFirstNonCompletedStage(chainIdentifier, context,
+              stageExecutorKey.getAuxiliaryKey());
+
+      StageExecutor executor = getExecutor(stage, stageExecutorKey.getAuxiliaryKey());
+
+      return (U) executor.fetchInfo(context);
+    } catch (ChainExecutorException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("Error fetching info for key {}", stageExecutorKey);
+      throw ChainExecutorException.propagate(ErrorCode.EXECUTION_ERROR, e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     do {
       final var executor = getExecutor(currentStage, auxiliaryKey);
