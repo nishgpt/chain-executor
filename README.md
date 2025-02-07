@@ -1,6 +1,6 @@
 <p align="center"><h1 align="center">CHAIN-EXECUTOR</h1></p>
 <p align="center">
-	<em><code>❯ A simplified state machine </code></em>
+	<em><code>❯ A simplified linear workflow executor </code></em>
 </p>
 <p align="center">
 	<img src="https://img.shields.io/github/license/nishgpt/chain-executor?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
