@@ -143,11 +143,15 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         return finishExecution(context);
       }
 
-      StageExecutor executor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
+      // Computing the current stage from start of chain.
+      // Stage validation may have caused change in state for prior stages as well.
+      final var currentStage = getFirstNonCompletedStage(chainIdentifier, context, stageExecutorKey.getAuxiliaryKey());
+      StageExecutor executor = getExecutor(currentStage, stageExecutorKey.getAuxiliaryKey());
+
       //If stage is not initiated, call init
       if (executor.getStageStatus(context)
               .isNotInitiated()) {
-        log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
+        log.info("Initiating {} Stage for id - {}", currentStage, context.getId());
         context = (U) executor.init(context);
       }
 
