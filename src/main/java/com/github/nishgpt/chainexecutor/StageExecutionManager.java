@@ -118,33 +118,19 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   public U initNext(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
 
     try {
-      var nextStage = chainRegistry.getNextStage(chainIdentifier,
-          stageExecutorKey.getStage());
+      sweepForward(stageExecutorKey, chainIdentifier, context);
 
-      while (Objects.nonNull(nextStage)) {
-        final var nextExecutor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
+      // Sweeping forward may have caused invalidation of some previous stage(s), hence recomputing next stage from chain head
+      final var nextStage = getFirstNonCompletedStage(chainIdentifier, context,
+          stageExecutorKey.getAuxiliaryKey());
 
-        //validate status and check completion
-        nextExecutor.validateStatus(context);
-
-        //check if stage can be skipped
-        if (nextExecutor.getStageStatus(context).isNotInitiated()) {
-          nextExecutor.skipIfApplicable(context);
-        }
-
-        if (!nextExecutor.getStageStatus(context).isCompletedOrSkipped()) {
-          break;
-        }
-        nextStage = chainRegistry.getNextStage(chainIdentifier, nextStage);
-      }
-
-      // if last stage has completed: revisit for a more concrete check
+      // If everything is completed: revisit for a more concrete check
       if (Objects.isNull(nextStage)) {
         return finishExecution(context);
       }
 
-      StageExecutor executor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
-      //If stage is not initiated, call init
+      final var executor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
+      // If stage is not initiated, call init
       if (executor.getStageStatus(context)
               .isNotInitiated()) {
         log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
@@ -236,5 +222,35 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
     //check for further stages and init the first initable stage
     return initNext(stageExecutorKey, chainIdentifier, updatedContext);
+  }
+
+  //Validates stages going forward, skips if applicable until it finds a non-(completed/skipped) stage
+  @SuppressWarnings("unchecked")
+  private void sweepForward(StageExecutorKey<T, K> stageExecutorKey,
+      C chainIdentifier, U context) {
+    try {
+      var nextStage = chainRegistry.getNextStage(chainIdentifier,
+          stageExecutorKey.getStage());
+
+      while (Objects.nonNull(nextStage)) {
+        final var nextExecutor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
+
+        //validate status and check completion
+        nextExecutor.validateStatus(context);
+
+        //check if stage can be skipped
+        if (nextExecutor.getStageStatus(context).isNotInitiated()) {
+          nextExecutor.skipIfApplicable(context);
+        }
+
+        if (!nextExecutor.getStageStatus(context).isCompletedOrSkipped()) {
+          break;
+        }
+        nextStage = chainRegistry.getNextStage(chainIdentifier, nextStage);
+      }
+    } catch (Exception e) {
+      log.error("Error validating stages after {}", stageExecutorKey.getStage());
+      throw ChainExecutorException.propagate(ErrorCode.EXECUTION_ERROR, e);
+    }
   }
 }
