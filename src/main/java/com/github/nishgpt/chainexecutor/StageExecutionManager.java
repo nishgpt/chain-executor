@@ -32,6 +32,14 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   public U execute(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context,
       V request) throws ChainExecutorException {
     try {
+      final var executor = executorFactory.getExecutor(stageExecutorKey);
+
+      //Run pre-execution validation checks
+      if (!executor.validateBeforeExecution(context)) {
+        log.info("Pre-execution validation failed for stage {}", stageExecutorKey.getStage());
+        return context;
+      }
+
       validatePreviousStagesCompletion(chainIdentifier, context, stageExecutorKey.getAuxiliaryKey(),
           stageExecutorKey.getStage());
 
@@ -41,7 +49,6 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         throw ChainExecutorException.error(ErrorCode.INVALID_EXECUTION_STAGE);
       }
 
-      final var executor = executorFactory.getExecutor(stageExecutorKey);
       final var currentStatus = executor.getStageStatus(context);
 
       //Init this stage if not initiated and can't be skipped
@@ -140,6 +147,13 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       // Background stage. Auto execute
       if (executor.isBackground(context) && executor.getStageStatus(context)
               .isExecutable()) {
+        //Run pre-execution validation checks
+        if (!executor.validateBeforeExecution(context)) {
+          log.info("Pre-execution validation failed for stage {}", stageExecutorKey.getStage());
+          return context;
+        }
+        //Execute this stage
+        log.info("Auto executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
         context = (U) executor.execute(context, null);
         StageStatus stageStatus = executor.getStageStatus(context);
         if (stageStatus.isCompletedOrSkipped()) {

@@ -25,6 +25,14 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
   T fetchInfo(T context);
 
   /**
+   * Runs pre-execute validation checks
+   *
+   * @param context
+   * @return
+   */
+  default boolean validateBeforeExecution(T context) {return true;}
+
+  /**
    * Executes this stage
    *
    * @param context
