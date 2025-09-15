@@ -25,6 +25,15 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
   T fetchInfo(T context);
 
   /**
+   * This function should be used to enrich the context before execution  and run some pre execution validations
+   * @param context current execution context
+   * @return StagePreExecutionResponse with updated context and status
+   */
+  default StagePreExecutionResponse<T> preExecution(T context){
+    return StagePreExecutionResponse.<T>builder().context(context).status(StagePreExecutionStatus.ALLOW).build();
+  }
+
+  /**
    * Executes this stage
    *
    * @param context
