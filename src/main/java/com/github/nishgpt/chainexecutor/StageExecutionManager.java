@@ -273,8 +273,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     if (executor.getStageStatus(context).isExecutable() && preExecutionResponse.getStatus().isPass()) {
       //Passing the enriched context from pre-execution response & executing the stage
       log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
-      context = (U) executor.execute(context, request);
-      return context;
+      return (U) executor.execute(context, request);
     }
 
     log.warn("Skipping execution of {} Stage for id - {}. Conflicting Current Status: {} & Pre-execution Status: {}",
