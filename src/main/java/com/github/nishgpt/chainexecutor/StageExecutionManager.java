@@ -61,7 +61,10 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         return context;
       }
 
-      context = validateAndExecute(stageExecutorKey, context, executor, request);
+
+      if(currentStatus.isExecutable()){
+          context = validateAndExecute(stageExecutorKey, context, executor, request);
+      }
 
       //If stage has not been processed, expect a call to resume flow
       //Otherwise, perform post completion actions
@@ -134,7 +137,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       }
 
       // Background stage. Auto execute
-      if (executor.isBackground(context)) {
+      if (executor.isBackground(context) && executor.getStageStatus(context).isExecutable()) {
         context = validateAndExecute(stageExecutorKey, context, executor, null);
         StageStatus stageStatus = executor.getStageStatus(context);
         if (stageStatus.isCompletedOrSkipped()) {
@@ -251,22 +254,31 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
   // Execute a stage after validating pre-execution conditions
   @SuppressWarnings("unchecked")
-  private U validateAndExecute(StageExecutorKey<T, K> stageExecutorKey, U context, StageExecutor executor, V request) {
+  private U validateAndExecute(StageExecutorKey<T, K> stageExecutorKey, U context, StageExecutor executor, final V request) {
     //Perform pre-execution checks
-    log.info("Performing pre-execution checks for {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
-    final var preExecutionResponse = executor.preExecution(context);
+    log.debug("Performing pre-execution checks for {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
+    final var preExecutionResponse = executor.preExecute(context);
+    context = (U) preExecutionResponse.getContext();
 
     if(preExecutionResponse.getStatus().isFailed()) {
-      throw ChainExecutorException.error(ErrorCode.PRE_EXECUTION_VALIDATION_FAILED);
+      throw ChainExecutorException.error(ErrorCode.PRE_EXECUTION_FAILED);
+    }
+
+    if(preExecutionResponse.getStatus().isBlocked()){
+        log.info("{} Stage for id - {} is blocked in pre-execution checks", stageExecutorKey.getStage(), context.getId());
+        return context;
     }
 
     //Execute only if stage is executable and pre-execution checks have allowed execution
-    if (executor.getStageStatus(context).isExecutable() && preExecutionResponse.getStatus().isAllowed()) {
+    if (executor.getStageStatus(context).isExecutable() && preExecutionResponse.getStatus().isPass()) {
       //Passing the enriched context from pre-execution response & executing the stage
       log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
       context = (U) executor.execute(preExecutionResponse.getContext(), request);
+      return context;
     }
 
+    log.warn("Skipping execution of {} Stage for id - {}. Conflicting Current Status: {} & Pre-execution Status: {}",
+        stageExecutorKey.getStage(), context.getId(), executor.getStageStatus(context), preExecutionResponse.getStatus());
     return context;
   }
 }
