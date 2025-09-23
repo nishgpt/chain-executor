@@ -273,7 +273,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     if (executor.getStageStatus(context).isExecutable() && preExecutionResponse.getStatus().isPass()) {
       //Passing the enriched context from pre-execution response & executing the stage
       log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
-      context = (U) executor.execute(preExecutionResponse.getContext(), request);
+      context = (U) executor.execute(context, request);
       return context;
     }
 
