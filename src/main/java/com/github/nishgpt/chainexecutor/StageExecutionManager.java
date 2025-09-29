@@ -63,7 +63,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
 
       if(currentStatus.isExecutable()){
-          context = validateAndExecute(stageExecutorKey, context, executor, request);
+          context = safeExecute(stageExecutorKey, context, executor, request);
       }
 
       //If stage has not been processed, expect a call to resume flow
@@ -138,7 +138,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
       // Background stage. Auto execute
       if (executor.isBackground(context) && executor.getStageStatus(context).isExecutable()) {
-        context = validateAndExecute(stageExecutorKey, context, executor, null);
+        context = safeExecute(stageExecutorKey, context, executor, null);
         StageStatus stageStatus = executor.getStageStatus(context);
         if (stageStatus.isCompletedOrSkipped()) {
           return performPostCompletionSteps(context, executor, stageExecutorKey,
@@ -254,7 +254,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
   // Execute a stage after validating pre-execution conditions
   @SuppressWarnings("unchecked")
-  private U validateAndExecute(StageExecutorKey<T, K> stageExecutorKey, U context, StageExecutor executor, final V request) {
+  private U safeExecute(StageExecutorKey<T, K> stageExecutorKey, U context, StageExecutor executor, final V request) {
     //Perform pre-execution checks
     log.debug("Performing pre-execution checks for {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
     final var preExecutionResponse = executor.preExecute(context);
