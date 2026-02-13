@@ -15,7 +15,8 @@ public abstract class StageExecutorFactory<A extends Annotation> {
   private final Map<StageExecutorKey, StageExecutor> executors = Maps.newConcurrentMap();
 
   @SuppressWarnings("unchecked")
-  public StageExecutorFactory(final String executorPackage, final Injector injector,
+  public StageExecutorFactory(final String executorPackage,
+      final Injector injector,
       final Class<A> annotationClass) {
     Preconditions.checkNotNull(injector, "Injector cannot be null");
     final var reflections = new Reflections(executorPackage);
@@ -24,7 +25,8 @@ public abstract class StageExecutorFactory<A extends Annotation> {
     annotatedClasses.forEach(annotatedClass -> {
       if (StageExecutor.class.isAssignableFrom(annotatedClass)) {
         final var instance = (StageExecutor) injector.getInstance(annotatedClass);
-        instance.getExecutorKeys().forEach(key -> executors.put((StageExecutorKey) key, instance));
+        instance.getExecutorKeys()
+            .forEach(key -> executors.put((StageExecutorKey) key, instance));
       }
     });
   }

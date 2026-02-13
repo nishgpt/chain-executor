@@ -15,17 +15,17 @@
 </p>
 <br>
 
-##  Table of Contents
+## Table of Contents
 
 - [ Overview](#-overview)
 - [ Features](#-features)
 - [ Project Structure](#-project-structure)
-  - [ Project Index](#-project-index)
+    - [ Project Index](#-project-index)
 - [ Getting Started](#-getting-started)
-  - [ Prerequisites](#-prerequisites)
-  - [ Installation](#-installation)
-  - [ Usage](#-usage)
-  - [ Testing](#-testing)
+    - [ Prerequisites](#-prerequisites)
+    - [ Installation](#-installation)
+    - [ Usage](#-usage)
+    - [ Testing](#-testing)
 - [ Project Roadmap](#-project-roadmap)
 - [ Contributing](#-contributing)
 - [ License](#-license)
@@ -33,23 +33,25 @@
 
 ---
 
-##  Overview
+## Overview
 
-A library that lets you define and chain multiple stages in a linear fashion and helps you execute the same against a context. You can register multiple chains against identifiers and execute one as needed.
-
----
-
-##  Features
-
-|      | Feature         | Summary       |
-| :--- | :---:           | :---          |
-| ⚙️  | **Architecture**  | <ul><li>Uses a stage-based execution model, where individual processing steps (`StageExecutor` interface,  [src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutor.java](src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutor.java)) are chained together (`StageChain` class, [src/main/java/com/github/nishgpt/chainexecutor/models/stage/StageChain.java](src/main/java/com/github/nishgpt/chainexecutor/models/stage/StageChain.java)).</li><li>`StageExecutionManager` orchestrates the execution of these stages, managing their lifecycle and ensuring sequential execution ([src/main/java/com/github/nishgpt/chainexecutor/StageExecutionManager.java](src/main/java/com/github/nishgpt/chainexecutor/StageExecutionManager.java)).</li><li>Employs a factory pattern (`StageExecutorFactory`, [src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutorFactory.java](src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutorFactory.java)) for creating and managing `StageExecutor` instances, promoting flexibility and extensibility.</li><li>Utilizes custom exceptions (`ChainExecutorException`, [src/main/java/com/github/nishgpt/chainexecutor/exceptions/ChainExecutorException.java](src/main/java/com/github/nishgpt/chainexecutor/exceptions/ChainExecutorException.java)) and error codes (`ErrorCode`, [src/main/java/com/github/nishgpt/chainexecutor/exceptions/ErrorCode.java](src/main/java/com/github/nishgpt/chainexecutor/exceptions/ErrorCode.java)) for robust error handling.</li></ul> |
-| 🔩 | **Code Quality**  | <ul><li>Code style and adherence to best practices are inferred from the provided snippets, but cannot be definitively assessed without a full code review.</li><li>The use of interfaces (`StageExecutor`, `StageChainIdentifier`) suggests a focus on modularity and abstraction.</li><li>Custom exception handling improves error management and maintainability.</li><li>Further analysis is needed to assess aspects like code complexity, cyclomatic complexity, and code coverage.</li></ul> |
-| 📄 | **Documentation** | <ul><li>Javadoc-style comments are present in the code snippets, indicating some level of inline documentation.</li><li>The provided metadata indicates 14 Java files with documentation in Java (`primary_language='Java' language_counts={'java': 14}`). </li><li>The extent of external documentation (e.g., README, user guides) is unknown.</li><li>More comprehensive documentation would improve understandability and maintainability.</li></ul> |
+A library that lets you define and chain multiple stages in a linear fashion and helps you execute
+the same against a context. You can register multiple chains against identifiers and execute one as
+needed.
 
 ---
 
-##  Project Structure
+## Features
+
+|    |      Feature      | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+|:---|:-----------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ⚙️ | **Architecture**  | <ul><li>Uses a stage-based execution model, where individual processing steps (`StageExecutor` interface,  [src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutor.java](src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutor.java)) are chained together (`StageChain` class, [src/main/java/com/github/nishgpt/chainexecutor/models/stage/StageChain.java](src/main/java/com/github/nishgpt/chainexecutor/models/stage/StageChain.java)).</li><li>`StageExecutionManager` orchestrates the execution of these stages, managing their lifecycle and ensuring sequential execution ([src/main/java/com/github/nishgpt/chainexecutor/StageExecutionManager.java](src/main/java/com/github/nishgpt/chainexecutor/StageExecutionManager.java)).</li><li>Employs a factory pattern (`StageExecutorFactory`, [src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutorFactory.java](src/main/java/com/github/nishgpt/chainexecutor/models/execution/StageExecutorFactory.java)) for creating and managing `StageExecutor` instances, promoting flexibility and extensibility.</li><li>Utilizes custom exceptions (`ChainExecutorException`, [src/main/java/com/github/nishgpt/chainexecutor/exceptions/ChainExecutorException.java](src/main/java/com/github/nishgpt/chainexecutor/exceptions/ChainExecutorException.java)) and error codes (`ErrorCode`, [src/main/java/com/github/nishgpt/chainexecutor/exceptions/ErrorCode.java](src/main/java/com/github/nishgpt/chainexecutor/exceptions/ErrorCode.java)) for robust error handling.</li></ul> |
+| 🔩 | **Code Quality**  | <ul><li>Code style and adherence to best practices are inferred from the provided snippets, but cannot be definitively assessed without a full code review.</li><li>The use of interfaces (`StageExecutor`, `StageChainIdentifier`) suggests a focus on modularity and abstraction.</li><li>Custom exception handling improves error management and maintainability.</li><li>Further analysis is needed to assess aspects like code complexity, cyclomatic complexity, and code coverage.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 📄 | **Documentation** | <ul><li>Javadoc-style comments are present in the code snippets, indicating some level of inline documentation.</li><li>The provided metadata indicates 14 Java files with documentation in Java (`primary_language='Java' language_counts={'java': 14}`). </li><li>The extent of external documentation (e.g., README, user guides) is unknown.</li><li>More comprehensive documentation would improve understandability and maintainability.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+
+---
+
+## Project Structure
 
 ```sh
 └── chain-executor/
@@ -60,8 +62,8 @@ A library that lets you define and chain multiple stages in a linear fashion and
         └── main
 ```
 
+### Project Index
 
-###  Project Index
 <details open>
 	<summary><b><code>CHAIN-EXECUTOR/</code></b></summary>
 	<details> <!-- __root__ Submodule -->
@@ -193,16 +195,17 @@ A library that lets you define and chain multiple stages in a linear fashion and
 </details>
 
 ---
-##  Getting Started
 
-###  Prerequisites
+## Getting Started
 
-Before getting started with chain-executor, ensure your runtime environment meets the following requirements:
+### Prerequisites
+
+Before getting started with chain-executor, ensure your runtime environment meets the following
+requirements:
 
 - **Programming Language:** Java
 
-
-###  Installation
+### Installation
 
 Install chain-executor using one of the following methods:
 
@@ -231,16 +234,21 @@ Use the following maven dependency
 
 ---
 
-###  Usage
-Import it as a dependency and extend the base classes to construct your chain. The understand how classes work, please read the descriptions above.
+### Usage
+
+Import it as a dependency and extend the base classes to construct your chain. The understand how
+classes work, please read the descriptions above.
 
 ---
 
-##  Contributing
+## Contributing
 
-- **💬 [Join the Discussions](https://github.com/nishgpt/chain-executor/discussions)**: Share your insights, provide feedback, or ask questions.
-- **🐛 [Report Issues](https://github.com/nishgpt/chain-executor/issues)**: Submit bugs found or log feature requests for the `chain-executor` project.
-- **💡 [Submit Pull Requests](https://github.com/nishgpt/chain-executor/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
+- **💬 [Join the Discussions](https://github.com/nishgpt/chain-executor/discussions)**: Share your
+  insights, provide feedback, or ask questions.
+- **🐛 [Report Issues](https://github.com/nishgpt/chain-executor/issues)**: Submit bugs found or log
+  feature requests for the `chain-executor` project.
+- **💡 [Submit Pull Requests](https://github.com/nishgpt/chain-executor/blob/main/CONTRIBUTING.md)**:
+  Review open PRs, and submit your own PRs.
 
 <details closed>
 <summary>Contributing Guidelines</summary>
@@ -263,8 +271,11 @@ Import it as a dependency and extend the base classes to construct your chain. T
    ```sh
    git push origin new-feature-x
    ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
+7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe
+   the changes and their motivations.
+8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch.
+   Congratulations on your contribution!
+
 </details>
 
 <details closed>
@@ -279,7 +290,7 @@ Import it as a dependency and extend the base classes to construct your chain. T
 
 ---
 
-##  License
+## License
 
 Copyright [2023] Nishant Gupta nishant141077@gmail.com
 

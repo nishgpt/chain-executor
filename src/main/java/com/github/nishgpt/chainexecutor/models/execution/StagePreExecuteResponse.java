@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class StagePreExecuteResponse<T extends ExecutionContext>{
-    private T context;
-    private StagePreExecuteStatus status;
+public class StagePreExecuteResponse<T extends ExecutionContext> {
+
+  private T context;
+  private StagePreExecuteStatus status;
 }

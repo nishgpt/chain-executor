@@ -15,7 +15,8 @@ public class StageChainRegistry<T extends Stage, K extends StageChainIdentifier>
     return this.get(chainIdentifier);
   }
 
-  public T getNextStage(K chainIdentifier, T currentStage) {
+  public T getNextStage(K chainIdentifier,
+      T currentStage) {
     final var chain = getStageChain(chainIdentifier);
     if (Objects.isNull(chain)) {
       return null;
@@ -24,7 +25,8 @@ public class StageChainRegistry<T extends Stage, K extends StageChainIdentifier>
     if (Objects.isNull(currentStage)) {
       return chain.getHead();
     }
-    return chain.getForwardChainMappings().get(currentStage);
+    return chain.getForwardChainMappings()
+        .get(currentStage);
   }
 
   public T getChainHead(K chainIdentifier) {
@@ -45,10 +47,11 @@ public class StageChainRegistry<T extends Stage, K extends StageChainIdentifier>
   ) {
     final Map<T, Boolean> allStages = new HashMap<>();
 
-    chain.getForwardChainMappings().forEach((key, value) -> {
-      allStages.putIfAbsent(key, Boolean.FALSE);
-      allStages.putIfAbsent(value, Boolean.FALSE);
-    });
+    chain.getForwardChainMappings()
+        .forEach((key, value) -> {
+          allStages.putIfAbsent(key, Boolean.FALSE);
+          allStages.putIfAbsent(value, Boolean.FALSE);
+        });
 
     var currentStage = chain.getHead();
     do {
@@ -62,12 +65,15 @@ public class StageChainRegistry<T extends Stage, K extends StageChainIdentifier>
       allStages.put(currentStage, Boolean.TRUE);
 
       //move over to next stage
-      currentStage = chain.getForwardChainMappings().get(currentStage);
+      currentStage = chain.getForwardChainMappings()
+          .get(currentStage);
     } while (Objects.nonNull(currentStage));
 
     //If any stage is left unvisited
-    if (allStages.entrySet().stream()
-        .anyMatch(entry -> entry.getValue().equals(Boolean.FALSE))) {
+    if (allStages.entrySet()
+        .stream()
+        .anyMatch(entry -> entry.getValue()
+            .equals(Boolean.FALSE))) {
       log.error("Possible chain breakage; Invalid chain for {}", identifier);
       throw ChainExecutorException.error(ErrorCode.INVALID_CHAIN);
     }

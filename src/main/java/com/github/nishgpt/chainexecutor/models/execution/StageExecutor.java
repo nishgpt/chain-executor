@@ -14,8 +14,8 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
   Set<StageExecutorKey<M, K>> getExecutorKeys();
 
   /**
-   * Checks and updates the stage status to INITIATED.
-   * This should be used for things which require only one time initiation.
+   * Checks and updates the stage status to INITIATED. This should be used for things which require only one time
+   * initiation.
    */
   T init(T context);
 
@@ -26,11 +26,15 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
 
   /**
    * This function should be used to enrich the context before execution  and run some pre execution validations
+   *
    * @param context current execution context
    * @return StagePreExecuteResponse with updated context and status
    */
-  default StagePreExecuteResponse<T> preExecute(T context){
-    return StagePreExecuteResponse.<T>builder().context(context).status(StagePreExecuteStatus.PASS).build();
+  default StagePreExecuteResponse<T> preExecute(T context) {
+    return StagePreExecuteResponse.<T>builder()
+        .context(context)
+        .status(StagePreExecuteStatus.PASS)
+        .build();
   }
 
   /**
@@ -40,7 +44,8 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
    * @param request In case of background stage, request can be null and should not be used in execution
    * @return
    */
-  T execute(T context, U request);
+  T execute(T context,
+      U request);
 
   /**
    * Resumes this stage if not completed
@@ -86,7 +91,7 @@ public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, 
    * @param context
    * @return
    */
-  default boolean isBackground(T context){
+  default boolean isBackground(T context) {
     return false;
   }
 }
