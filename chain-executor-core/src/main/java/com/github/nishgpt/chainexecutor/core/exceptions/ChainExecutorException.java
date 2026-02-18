@@ -1,4 +1,4 @@
-package com.github.nishgpt.chainexecutor.exceptions;
+package com.github.nishgpt.chainexecutor.core.exceptions;
 
 import java.io.Serial;
 import lombok.Builder;
@@ -15,7 +15,8 @@ public class ChainExecutorException extends RuntimeException {
   private final ErrorCode errorCode;
 
   @Builder
-  public ChainExecutorException(final ErrorCode errorCode, final String message,
+  public ChainExecutorException(final ErrorCode errorCode,
+      final String message,
       final Throwable cause) {
     super(message, cause);
 
@@ -26,7 +27,8 @@ public class ChainExecutorException extends RuntimeException {
     return new ChainExecutorException(errorCode, ERROR_OCCURRED_MESSAGE, null);
   }
 
-  public static ChainExecutorException propagate(final ErrorCode errorCode, final Throwable cause) {
+  public static ChainExecutorException propagate(final ErrorCode errorCode,
+      final Throwable cause) {
     if (cause instanceof ChainExecutorException) {
       return (ChainExecutorException) cause;
     }

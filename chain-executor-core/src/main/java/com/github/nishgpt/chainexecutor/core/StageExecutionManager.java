@@ -1,17 +1,17 @@
-package com.github.nishgpt.chainexecutor;
+package com.github.nishgpt.chainexecutor.core;
 
-import com.github.nishgpt.chainexecutor.exceptions.ChainExecutorException;
-import com.github.nishgpt.chainexecutor.exceptions.ErrorCode;
-import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
-import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
-import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
-import com.github.nishgpt.chainexecutor.models.execution.StageExecutor;
-import com.github.nishgpt.chainexecutor.models.execution.StageExecutorFactory;
-import com.github.nishgpt.chainexecutor.models.execution.StageExecutorKey;
-import com.github.nishgpt.chainexecutor.models.stage.Stage;
-import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
-import com.github.nishgpt.chainexecutor.models.stage.StageChainRegistry;
-import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
+import com.github.nishgpt.chainexecutor.core.exceptions.ChainExecutorException;
+import com.github.nishgpt.chainexecutor.core.exceptions.ErrorCode;
+import com.github.nishgpt.chainexecutor.core.models.execution.ExecutionContext;
+import com.github.nishgpt.chainexecutor.core.models.execution.ExecutorAuxiliaryKey;
+import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutionRequest;
+import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutor;
+import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutorFactory;
+import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutorKey;
+import com.github.nishgpt.chainexecutor.core.models.stage.Stage;
+import com.github.nishgpt.chainexecutor.core.models.stage.StageChainIdentifier;
+import com.github.nishgpt.chainexecutor.core.models.stage.StageChainRegistry;
+import com.github.nishgpt.chainexecutor.core.models.stage.StageStatus;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,15 +29,18 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   private final StageExecutorFactory executorFactory;
 
   @SuppressWarnings("unchecked")
-  public U execute(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context,
+  public U execute(StageExecutorKey<T, K> stageExecutorKey,
+      C chainIdentifier,
+      U context,
       V request) throws ChainExecutorException {
     try {
       validatePreviousStagesCompletion(chainIdentifier, context, stageExecutorKey.getAuxiliaryKey(),
           stageExecutorKey.getStage());
 
       //Check if first executable stage is same as requested
-      if (!stageExecutorKey.getStage().equals(getFirstNonCompletedStage(chainIdentifier, context,
-          stageExecutorKey.getAuxiliaryKey()))) {
+      if (!stageExecutorKey.getStage()
+          .equals(getFirstNonCompletedStage(chainIdentifier, context,
+              stageExecutorKey.getAuxiliaryKey()))) {
         throw ChainExecutorException.error(ErrorCode.INVALID_EXECUTION_STAGE);
       }
 
@@ -47,7 +50,8 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       //Init this stage if not initiated and can't be skipped
       if (currentStatus.isNotInitiated()) {
         final var updatedContext = (U) executor.skipIfApplicable(context);
-        if(executor.getStageStatus(updatedContext).isSkipped()) {
+        if (executor.getStageStatus(updatedContext)
+            .isSkipped()) {
           context = updatedContext;
           log.info("Skipped {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
         } else {
@@ -61,14 +65,14 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         return context;
       }
 
-
-      if(currentStatus.isExecutable()){
-          context = safeExecute(stageExecutorKey, context, executor, request);
+      if (currentStatus.isExecutable()) {
+        context = safeExecute(stageExecutorKey, context, executor, request);
       }
 
       //If stage has not been processed, expect a call to resume flow
       //Otherwise, perform post completion actions
-      if (executor.getStageStatus(context).isCompletedOrSkipped()) {
+      if (executor.getStageStatus(context)
+          .isCompletedOrSkipped()) {
         return performPostCompletionSteps(context, executor, stageExecutorKey,
             chainIdentifier);
       }
@@ -82,7 +86,9 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
-  public U resume(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context)
+  public U resume(StageExecutorKey<T, K> stageExecutorKey,
+      C chainIdentifier,
+      U context)
       throws ChainExecutorException {
     try {
       final var executor = executorFactory.getExecutor(stageExecutorKey);
@@ -97,7 +103,8 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       //Resume this stage if pending
       var updatedContext = (U) executor.resume(context);
 
-      if (executor.getStageStatus(updatedContext).isCompleted()) {
+      if (executor.getStageStatus(updatedContext)
+          .isCompleted()) {
         return performPostCompletionSteps(updatedContext, executor, stageExecutorKey,
             chainIdentifier);
       }
@@ -111,10 +118,10 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     }
   }
 
-  protected abstract U finishExecution(U context);
-
   @SuppressWarnings("unchecked")
-  public U initNext(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
+  public U initNext(StageExecutorKey<T, K> stageExecutorKey,
+      C chainIdentifier,
+      U context) {
 
     try {
       sweepForward(stageExecutorKey, chainIdentifier, context);
@@ -131,18 +138,19 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       final var executor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
       // If stage is not initiated, call init
       if (executor.getStageStatus(context)
-              .isNotInitiated()) {
+          .isNotInitiated()) {
         log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
         context = (U) executor.init(context);
       }
 
       // Background stage. Auto execute
-      if (executor.isBackground(context) && executor.getStageStatus(context).isExecutable()) {
+      if (executor.isBackground(context) && executor.getStageStatus(context)
+          .isExecutable()) {
         context = safeExecute(stageExecutorKey, context, executor, null);
         StageStatus stageStatus = executor.getStageStatus(context);
         if (stageStatus.isCompletedOrSkipped()) {
           return performPostCompletionSteps(context, executor, stageExecutorKey,
-                  chainIdentifier);
+              chainIdentifier);
         }
       }
 
@@ -156,11 +164,13 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
-  public U fetchInfo(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
+  public U fetchInfo(StageExecutorKey<T, K> stageExecutorKey,
+      C chainIdentifier,
+      U context) {
 
     try {
       var stage = getFirstNonCompletedStage(chainIdentifier, context,
-              stageExecutorKey.getAuxiliaryKey());
+          stageExecutorKey.getAuxiliaryKey());
 
       StageExecutor executor = getExecutor(stage, stageExecutorKey.getAuxiliaryKey());
 
@@ -173,12 +183,17 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     }
   }
 
+  protected abstract U finishExecution(U context);
+
   @SuppressWarnings("unchecked")
-  protected T getFirstNonCompletedStage(C chainIdentifier, U context, K auxiliaryKey) {
+  protected T getFirstNonCompletedStage(C chainIdentifier,
+      U context,
+      K auxiliaryKey) {
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     do {
       final var executor = getExecutor(currentStage, auxiliaryKey);
-      if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
+      if (!executor.getStageStatus(context)
+          .isCompletedOrSkipped()) {
         break;
       }
       currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
@@ -187,7 +202,8 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     return currentStage;
   }
 
-  protected StageExecutor getExecutor(T stage, K auxiliaryKey) {
+  protected StageExecutor getExecutor(T stage,
+      K auxiliaryKey) {
     final var executorKey = StageExecutorKey.<T, K>builder()
         .stage(stage)
         .auxiliaryKey(auxiliaryKey)
@@ -196,7 +212,9 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
-  protected void validatePreviousStagesCompletion(C chainIdentifier, U context, K auxiliaryKey,
+  protected void validatePreviousStagesCompletion(C chainIdentifier,
+      U context,
+      K auxiliaryKey,
       T endStage) {
     var currentStage = chainRegistry.getChainHead(chainIdentifier);
     while (Objects.nonNull(currentStage) && !currentStage.equals(endStage)) {
@@ -204,7 +222,8 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       executor.validateStatus(context);
 
       //break if stage is not completed or skipped
-      if (!executor.getStageStatus(context).isCompletedOrSkipped()) {
+      if (!executor.getStageStatus(context)
+          .isCompletedOrSkipped()) {
         break;
       }
       currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
@@ -212,8 +231,10 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
-  private U performPostCompletionSteps(U context, StageExecutor executor,
-      StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier) {
+  private U performPostCompletionSteps(U context,
+      StageExecutor executor,
+      StageExecutorKey<T, K> stageExecutorKey,
+      C chainIdentifier) {
 
     //Post execution processing, if any
     final var updatedContext = (U) executor.postExecution(context);
@@ -225,7 +246,8 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   //Validates stages going forward, skips if applicable until it finds a non-(completed/skipped) stage
   @SuppressWarnings("unchecked")
   private void sweepForward(StageExecutorKey<T, K> stageExecutorKey,
-      C chainIdentifier, U context) {
+      C chainIdentifier,
+      U context) {
     try {
       var nextStage = chainRegistry.getNextStage(chainIdentifier,
           stageExecutorKey.getStage());
@@ -237,11 +259,13 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         nextExecutor.validateStatus(context);
 
         //check if stage can be skipped
-        if (nextExecutor.getStageStatus(context).isNotInitiated()) {
+        if (nextExecutor.getStageStatus(context)
+            .isNotInitiated()) {
           nextExecutor.skipIfApplicable(context);
         }
 
-        if (!nextExecutor.getStageStatus(context).isCompletedOrSkipped()) {
+        if (!nextExecutor.getStageStatus(context)
+            .isCompletedOrSkipped()) {
           break;
         }
         nextStage = chainRegistry.getNextStage(chainIdentifier, nextStage);
@@ -254,30 +278,38 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
   // Execute a stage after validating pre-execution conditions
   @SuppressWarnings("unchecked")
-  private U safeExecute(StageExecutorKey<T, K> stageExecutorKey, U context, StageExecutor executor, final V request) {
+  private U safeExecute(StageExecutorKey<T, K> stageExecutorKey,
+      U context,
+      StageExecutor executor,
+      final V request) {
     //Perform pre-execution checks
     log.debug("Performing pre-execution checks for {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
     final var preExecutionResponse = executor.preExecute(context);
     context = (U) preExecutionResponse.getContext();
 
-    if(preExecutionResponse.getStatus().isFailed()) {
+    if (preExecutionResponse.getStatus()
+        .isFailed()) {
       throw ChainExecutorException.error(ErrorCode.PRE_EXECUTION_FAILED);
     }
 
-    if(preExecutionResponse.getStatus().isBlocked()){
-        log.info("{} Stage for id - {} is blocked in pre-execution checks", stageExecutorKey.getStage(), context.getId());
-        return context;
+    if (preExecutionResponse.getStatus()
+        .isBlocked()) {
+      log.info("{} Stage for id - {} is blocked in pre-execution checks", stageExecutorKey.getStage(), context.getId());
+      return context;
     }
 
     //Execute only if stage is executable and pre-execution checks have allowed execution
-    if (executor.getStageStatus(context).isExecutable() && preExecutionResponse.getStatus().isPass()) {
+    if (executor.getStageStatus(context)
+        .isExecutable() && preExecutionResponse.getStatus()
+        .isPass()) {
       //Passing the enriched context from pre-execution response & executing the stage
       log.info("Executing {} Stage for id - {}", stageExecutorKey.getStage(), context.getId());
       return (U) executor.execute(context, request);
     }
 
     log.warn("Skipping execution of {} Stage for id - {}. Conflicting Current Status: {} & Pre-execution Status: {}",
-        stageExecutorKey.getStage(), context.getId(), executor.getStageStatus(context), preExecutionResponse.getStatus());
+        stageExecutorKey.getStage(), context.getId(), executor.getStageStatus(context),
+        preExecutionResponse.getStatus());
     return context;
   }
 }
