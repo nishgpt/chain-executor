@@ -1,7 +1,7 @@
-package com.github.nishgpt.chainexecutor.models.execution;
+package com.github.nishgpt.chainexecutor.core.models.execution;
 
-import com.github.nishgpt.chainexecutor.models.stage.Stage;
-import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
+import com.github.nishgpt.chainexecutor.core.models.stage.Stage;
+import com.github.nishgpt.chainexecutor.core.models.stage.StageStatus;
 import java.util.Set;
 
 public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, T extends ExecutionContext, U extends StageExecutionRequest> {

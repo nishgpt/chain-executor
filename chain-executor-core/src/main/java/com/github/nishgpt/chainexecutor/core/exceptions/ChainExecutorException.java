@@ -1,4 +1,4 @@
-package com.github.nishgpt.chainexecutor.exceptions;
+package com.github.nishgpt.chainexecutor.core.exceptions;
 
 import java.io.Serial;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.github.nishgpt.chainexecutor.models.execution;
+package com.github.nishgpt.chainexecutor.core.models.execution;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package com.github.nishgpt.chainexecutor.models.stage;
+package com.github.nishgpt.chainexecutor.core.models.stage;
 
-import com.github.nishgpt.chainexecutor.exceptions.ChainExecutorException;
-import com.github.nishgpt.chainexecutor.exceptions.ErrorCode;
+import com.github.nishgpt.chainexecutor.core.exceptions.ChainExecutorException;
+import com.github.nishgpt.chainexecutor.core.exceptions.ErrorCode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;

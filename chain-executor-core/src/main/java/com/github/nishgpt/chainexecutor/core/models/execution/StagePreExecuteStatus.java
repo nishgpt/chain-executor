@@ -1,4 +1,4 @@
-package com.github.nishgpt.chainexecutor.models.execution;
+package com.github.nishgpt.chainexecutor.core.models.execution;
 
 public enum StagePreExecuteStatus {
   PASS,

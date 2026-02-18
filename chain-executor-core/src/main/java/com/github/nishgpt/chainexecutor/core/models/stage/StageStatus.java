@@ -1,4 +1,4 @@
-package com.github.nishgpt.chainexecutor.models.stage;
+package com.github.nishgpt.chainexecutor.core.models.stage;
 
 import java.util.Set;
 import lombok.Getter;
