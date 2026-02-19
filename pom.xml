@@ -165,7 +165,7 @@
           </properties>
           <licenseSets>
             <licenseSet>
-              <header>LICENSE-HEADER.txt</header>
+              <header>LICENSE-HEADER</header>
               <includes>
                 <include>**/*.java</include>
                 <include>**/*.xml</include>
