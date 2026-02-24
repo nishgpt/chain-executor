@@ -15,6 +15,7 @@
  */
 package com.github.nishgpt.chainexecutor.core.observability;
 
+import com.github.nishgpt.chainexecutor.models.observability.ChainExecutorObservationConfig;
 import java.util.Objects;
 
 /**
@@ -32,7 +33,7 @@ public class ChainExecutorObservabilityManager {
   }
 
   public static void refreshConfig(final ChainExecutorObservationConfig config) {
-    //currently same as init, but can be extended to have different logic for refreshing config if needed
+    //currently same as init, but can be extended to have different logic
     ChainExecutorObservabilityManager.observationConfig = config;
   }
 
