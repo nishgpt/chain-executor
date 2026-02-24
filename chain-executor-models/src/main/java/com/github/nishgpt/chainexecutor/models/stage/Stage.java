@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.exceptions;
+package com.github.nishgpt.chainexecutor.models.stage;
 
-import lombok.Getter;
+public interface Stage {
 
-@Getter
-public enum ErrorCode {
-  INVALID_CHAIN,
-  EXECUTION_ERROR,
-  INVALID_EXECUTION_STAGE,
-  EXECUTION_NOT_COMPLETED,
-  PRE_EXECUTION_FAILED
+  String name();
 }

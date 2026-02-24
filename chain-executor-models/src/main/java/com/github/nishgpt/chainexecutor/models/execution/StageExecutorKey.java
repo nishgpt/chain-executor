@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.models.execution;
+package com.github.nishgpt.chainexecutor.models.execution;
 
-import lombok.AllArgsConstructor;
+import com.github.nishgpt.chainexecutor.models.stage.Stage;
+import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@AllArgsConstructor
-@SuperBuilder
-public class ExecutionContext {
+@Builder
+public class StageExecutorKey<T extends Stage, K extends ExecutorAuxiliaryKey> {
 
-  private final String id;
+  private T stage;
+  private K auxiliaryKey;
 }

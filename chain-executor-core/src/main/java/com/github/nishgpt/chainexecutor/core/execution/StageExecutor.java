@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.models.execution;
+package com.github.nishgpt.chainexecutor.core.execution;
 
-import com.github.nishgpt.chainexecutor.core.models.stage.Stage;
-import com.github.nishgpt.chainexecutor.core.models.stage.StageStatus;
+import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
+import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
+import com.github.nishgpt.chainexecutor.models.execution.StageExecutorKey;
+import com.github.nishgpt.chainexecutor.models.execution.StagePreExecuteStatus;
+import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
+import com.github.nishgpt.chainexecutor.models.execution.StagePreExecuteResponse;
+import com.github.nishgpt.chainexecutor.models.stage.Stage;
+import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
 import java.util.Set;
 
 public interface StageExecutor<M extends Stage, K extends ExecutorAuxiliaryKey, T extends ExecutionContext, U extends StageExecutionRequest> {

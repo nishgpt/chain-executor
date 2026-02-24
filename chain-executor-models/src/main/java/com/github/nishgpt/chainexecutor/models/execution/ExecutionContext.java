@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.models.stage;
+package com.github.nishgpt.chainexecutor.models.execution;
 
-import java.util.Map;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
 @AllArgsConstructor
-public class StageChain<T extends Stage> {
+@SuperBuilder
+public class ExecutionContext {
 
-  private T head;
-  private Map<T, T> forwardChainMappings;
+  private final String id;
 }

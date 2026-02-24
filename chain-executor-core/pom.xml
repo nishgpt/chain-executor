@@ -36,6 +36,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.github.nishgpt</groupId>
+      <artifactId>chain-executor-models</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
     </dependency>

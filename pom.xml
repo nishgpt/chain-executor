@@ -50,8 +50,8 @@
 
   <modules>
     <module>chain-executor-core</module>
-    <module>chain-executor-observability</module>
     <module>chain-executor-bom</module>
+    <module>chain-executor-models</module>
   </modules>
 
   <distributionManagement>

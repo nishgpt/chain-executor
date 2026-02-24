@@ -13,9 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.models.stage;
+package com.github.nishgpt.chainexecutor.core.observability;
 
-public interface Stage {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ObservedMethod {
 
   String name();
+
+  MethodCriticality criticality() default MethodCriticality.LOW;
 }

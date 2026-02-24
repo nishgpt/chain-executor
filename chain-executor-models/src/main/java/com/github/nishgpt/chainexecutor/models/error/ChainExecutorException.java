@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.exceptions;
+package com.github.nishgpt.chainexecutor.models.error;
 
 import java.io.Serial;
 import lombok.Builder;

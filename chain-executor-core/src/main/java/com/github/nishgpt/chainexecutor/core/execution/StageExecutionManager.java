@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core;
+package com.github.nishgpt.chainexecutor.core.execution;
 
-import com.github.nishgpt.chainexecutor.core.exceptions.ChainExecutorException;
-import com.github.nishgpt.chainexecutor.core.exceptions.ErrorCode;
-import com.github.nishgpt.chainexecutor.core.models.execution.ExecutionContext;
-import com.github.nishgpt.chainexecutor.core.models.execution.ExecutorAuxiliaryKey;
-import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutionRequest;
-import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutor;
-import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutorFactory;
-import com.github.nishgpt.chainexecutor.core.models.execution.StageExecutorKey;
-import com.github.nishgpt.chainexecutor.core.models.stage.Stage;
-import com.github.nishgpt.chainexecutor.core.models.stage.StageChainIdentifier;
-import com.github.nishgpt.chainexecutor.core.models.stage.StageChainRegistry;
-import com.github.nishgpt.chainexecutor.core.models.stage.StageStatus;
+import com.github.nishgpt.chainexecutor.models.error.ChainExecutorException;
+import com.github.nishgpt.chainexecutor.models.error.ErrorCode;
+import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
+import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
+import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
+import com.github.nishgpt.chainexecutor.models.execution.StageExecutorKey;
+import com.github.nishgpt.chainexecutor.models.stage.Stage;
+import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
+import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
+import com.github.nishgpt.chainexecutor.core.observability.MethodCriticality;
+import com.github.nishgpt.chainexecutor.core.observability.ObservedMethod;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,6 +43,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   private final StageExecutorFactory executorFactory;
 
   @SuppressWarnings("unchecked")
+  @ObservedMethod(name = "execute", criticality = MethodCriticality.HIGH)
   public U execute(StageExecutorKey<T, K> stageExecutorKey,
       C chainIdentifier,
       U context,

@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.models.execution;
+package com.github.nishgpt.chainexecutor.core.observability;
 
-public enum StagePreExecuteStatus {
-  PASS,
-  BLOCK,
-  FAIL,
-  ;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-  public boolean isPass() {
-    return PASS.equals(this);
-  }
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class ChainExecutorObservationConfig {
 
-  public boolean isBlocked() {
-    return BLOCK.equals(this);
-  }
-
-  public boolean isFailed() {
-    return FAIL.equals(this);
-  }
+  private boolean enabled;
 }
