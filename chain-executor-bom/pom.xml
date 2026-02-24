@@ -42,7 +42,7 @@
       </dependency>
       <dependency>
         <groupId>com.github.nishgpt</groupId>
-        <artifactId>chain-executor-observability</artifactId>
+        <artifactId>chain-executor-models</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
