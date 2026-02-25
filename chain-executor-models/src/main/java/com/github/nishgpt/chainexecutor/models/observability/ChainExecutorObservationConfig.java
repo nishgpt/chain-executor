@@ -15,16 +15,31 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability;
 
+import com.github.nishgpt.chainexecutor.models.stage.Stage;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+/**
+ * Clients can define the config as per the need. They can choose defaultConfig for global settings or stageWiseConfig
+ * for stage specific settings.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class ChainExecutorObservationConfig {
 
-  private boolean enabled;
+  @Builder.Default
+  private ChainExecutorObservationConfigParams defaultConfigParams = ChainExecutorObservationConfigParams.builder()
+      .build();
+  @Builder.Default
+  private Map<Stage, ChainExecutorObservationConfigParams> stageWiseConfigParams = Map.of();
+
+  public ChainExecutorObservationConfigParams getObservationConfig(final Stage stage) {
+    return stageWiseConfigParams.getOrDefault(stage, defaultConfigParams);
+  }
 }

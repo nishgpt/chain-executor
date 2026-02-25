@@ -16,8 +16,8 @@
 package com.github.nishgpt.chainexecutor.models.observability;
 
 public enum MethodCriticality {
-  HIGH,
-  MEDIUM,
-  LOW,
+  CRITICAL,
+  AUXILIARY,//TODO:: rename if needed
+  INTERNAL,
   ;
 }

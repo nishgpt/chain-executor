@@ -41,7 +41,6 @@ public class ChainExecutorObservabilityManager {
     if (Objects.isNull(observationConfig)) {
       //client has probably opted out of observability, return a default config with all features disabled
       observationConfig = ChainExecutorObservationConfig.builder()
-          .enabled(false)
           .build();
     }
     return observationConfig;

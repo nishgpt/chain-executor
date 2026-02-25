@@ -43,7 +43,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   private final StageExecutorFactory executorFactory;
 
   @SuppressWarnings("unchecked")
-  @ObservedMethod(name = "execute", criticality = MethodCriticality.HIGH)
+  @ObservedMethod(name = "execute", criticality = MethodCriticality.CRITICAL)
   public U execute(StageExecutorKey<T, K> stageExecutorKey,
       C chainIdentifier,
       U context,
