@@ -15,11 +15,11 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability;
 
-//TODO:: better description for each enum value
-public enum ObservationVerbosity {
-  //Will capture basic details only
-  BASIC,
-  //Will capture additional context of request, response etc.
-  VERBOSE,
+/**
+ * Enum to represent the phase of observation, whether it's before or after the invocation of a method.
+ */
+public enum ObservationPhase {
+  BEFORE_METHOD_INVOCATION,
+  AFTER_METHOD_INVOCATION,
   ;
 }

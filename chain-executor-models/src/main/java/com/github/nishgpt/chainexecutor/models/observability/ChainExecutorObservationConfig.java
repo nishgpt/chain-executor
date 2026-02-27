@@ -33,6 +33,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ChainExecutorObservationConfig {
 
+  //TODO::
+  // add threadpool for processing observation payloads
+  // add preferred sink configurations
+
   @Builder.Default
   private ChainExecutorObservationConfigParams defaultConfigParams = ChainExecutorObservationConfigParams.builder()
       .build();

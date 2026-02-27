@@ -59,6 +59,7 @@
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjrt</artifactId>
+      <version>${aspectj.version}</version>
     </dependency>
 
     <dependency>
@@ -69,17 +70,77 @@
 
   <build>
     <plugins>
+      <!-- Delombok -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-maven-plugin</artifactId>
+        <version>1.18.20.0</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>delombok</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+              <outputDirectory>${project.build.directory}/delombok</outputDirectory>
+              <addOutputDirectory>false</addOutputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <!-- Disable default compiler (AspectJ will compile instead) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <skipMain>true</skipMain>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- AspectJ compile using delomboked sources -->
+      <plugin>
+        <groupId>dev.aspectj</groupId>
         <artifactId>aspectj-maven-plugin</artifactId>
-        <version>1.14.0</version>
+        <version>1.14</version>
         <configuration>
           <complianceLevel>17</complianceLevel>
           <source>17</source>
           <target>17</target>
+          <sources>
+            <source>
+              <basedir>${project.build.directory}/delombok</basedir>
+              <includes>
+                <include>**/*.java</include>
+              </includes>
+            </source>
+          </sources>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjtools</artifactId>
+            <version>${aspectj.version}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
+            <phase>process-sources</phase>
             <goals>
               <goal>compile</goal>
             </goals>
