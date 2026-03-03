@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.observability;
+package com.github.nishgpt.chainexecutor.models.observability.config;
 
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
+import jakarta.validation.Valid;
 import java.util.Map;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,15 +36,16 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ChainExecutorObservationConfig {
 
-  //TODO::
-  // add threadpool for processing observation payloads
-  // add preferred sink configurations
-
   @Builder.Default
   private ChainExecutorObservationConfigParams defaultConfigParams = ChainExecutorObservationConfigParams.builder()
       .build();
   @Builder.Default
   private Map<Stage, ChainExecutorObservationConfigParams> stageWiseConfigParams = Map.of();
+  //Dedicated threadpool to be used while dispatching observation payloads to the enabled sinks.
+  private int observationThreadpoolSize;
+  @Valid
+  @Builder.Default
+  private Set<ObservationSinkConfiguration> enabledSinks = Set.of();
 
   public ChainExecutorObservationConfigParams getObservationConfig(final Stage stage) {
     return stageWiseConfigParams.getOrDefault(stage, defaultConfigParams);

@@ -15,7 +15,7 @@
  */
 package com.github.nishgpt.chainexecutor.core.observability;
 
-import com.github.nishgpt.chainexecutor.models.observability.ChainExecutorObservationConfig;
+import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
 import java.util.Objects;
 
 /**
@@ -29,11 +29,13 @@ public class ChainExecutorObservabilityManager {
   private static ChainExecutorObservationConfig observationConfig;
 
   public static void init(final ChainExecutorObservationConfig config) {
+    validate(config);
     ChainExecutorObservabilityManager.observationConfig = config;
   }
 
   public static void refreshConfig(final ChainExecutorObservationConfig config) {
     //currently same as init, but can be extended to have different logic
+    validate(config);
     ChainExecutorObservabilityManager.observationConfig = config;
   }
 
@@ -44,6 +46,10 @@ public class ChainExecutorObservabilityManager {
           .build();
     }
     return observationConfig;
+  }
+
+  private static void validate(final ChainExecutorObservationConfig config) {
+    //TODO:: add any validation logic for the config here, e.g. if certain features are enabled, required fields must be present etc.
   }
 
 }

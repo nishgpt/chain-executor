@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.observability;
+package com.github.nishgpt.chainexecutor.models.observability.config.sink;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-public class ChainExecutorObservationConfigParams {
-
-  private boolean enabled;
-  private ObservationDepth depth;
-  private ObservationVerbosity verbosity;
+public enum SinkType {
+  LOG,
+  CLIENT_DISPATCH,
+  STORAGE,
+  ;
 }
