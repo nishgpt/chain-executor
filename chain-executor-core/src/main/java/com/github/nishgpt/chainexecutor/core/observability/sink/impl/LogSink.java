@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.observability.config.sink;
+package com.github.nishgpt.chainexecutor.core.observability.sink.impl;
 
-import jakarta.validation.constraints.NotNull;
+import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
+import com.github.nishgpt.chainexecutor.models.observability.ObservationPayload;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
-@Data
-@NoArgsConstructor
+@Slf4j
 @AllArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
-public abstract class ObservationSinkConfiguration {
+public class LogSink implements ObservationSink {
 
-  @NotNull
-  @EqualsAndHashCode.Include
-  private SinkType sinkType;
+  private final LogSinkConfiguration configuration;
 
-  public abstract <T> T accept(final ObservationSinkConfigurationVisitor<T> visitor);
+  @Override
+  public void consume(ObservationPayload payload) {
+    log.atLevel(configuration.getLogLevel().getLevel())
+        .log("Observation consumed {}", payload);
+  }
 }

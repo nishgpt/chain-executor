@@ -37,17 +37,24 @@ import lombok.experimental.SuperBuilder;
 public class ChainExecutorObservationConfig {
 
   @Builder.Default
-  private ChainExecutorObservationConfigParams defaultConfigParams = ChainExecutorObservationConfigParams.builder()
+  private ObservationConfigParams defaultConfigParams = ObservationConfigParams.builder()
       .build();
   @Builder.Default
-  private Map<Stage, ChainExecutorObservationConfigParams> stageWiseConfigParams = Map.of();
+  private Map<Stage, ObservationConfigParams> stageWiseConfigParams = Map.of();
   //Dedicated threadpool to be used while dispatching observation payloads to the enabled sinks.
-  private int observationThreadpoolSize;
+  @Builder.Default
+  private int observationThreadpoolSize = 4;
   @Valid
   @Builder.Default
   private Set<ObservationSinkConfiguration> enabledSinks = Set.of();
 
-  public ChainExecutorObservationConfigParams getObservationConfig(final Stage stage) {
+  public ObservationConfigParams getObservationConfig(final Stage stage) {
     return stageWiseConfigParams.getOrDefault(stage, defaultConfigParams);
+  }
+
+  public boolean isEnabled() {
+    return defaultConfigParams.isEnabled() || stageWiseConfigParams.values()
+        .stream()
+        .anyMatch(ObservationConfigParams::isEnabled);
   }
 }

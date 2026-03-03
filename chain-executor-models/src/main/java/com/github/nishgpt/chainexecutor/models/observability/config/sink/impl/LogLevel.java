@@ -15,23 +15,19 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability.config.sink.impl;
 
-import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
-import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfigurationVisitor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import lombok.Getter;
+import org.slf4j.event.Level;
 
-@Data
-@NoArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class ClientDispatchSinkConfiguration extends ObservationSinkConfiguration {
+public enum LogLevel {
+  INFO(Level.INFO),
+  DEBUG(Level.DEBUG),
+  TRACE(Level.TRACE),
+  ;
 
-  @Override
-  public <T> T accept(ObservationSinkConfigurationVisitor<T> visitor) {
-    return visitor.visit(this);
+  @Getter
+  private final Level level;
+
+  LogLevel(final Level level) {
+    this.level = level;
   }
 }

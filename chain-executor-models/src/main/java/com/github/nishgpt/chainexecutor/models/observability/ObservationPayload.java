@@ -31,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 //TODO:: see if need to break into after and before separate payload classes
-public class ChainExecutorObservationPayload {
+public class ObservationPayload {
 
   private String observationId; //unique identifier for the observation
   private ObservationPhase phase;

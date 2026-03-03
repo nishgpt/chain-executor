@@ -15,25 +15,16 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability.config.sink;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.ClientDispatchSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
-public abstract class ObservationSinkConfiguration {
+public interface ObservationSinkConfigurationVisitor<T> {
 
-  @NotNull
-  @EqualsAndHashCode.Include
-  private SinkType sinkType;
+  T visit(LogSinkConfiguration configuration);
 
-  public abstract <T> T accept(final ObservationSinkConfigurationVisitor<T> visitor);
+  T visit(ClientDispatchSinkConfiguration configuration);
+
+  T visit(StorageSinkConfiguration configuration);
+
 }

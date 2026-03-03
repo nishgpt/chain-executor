@@ -15,8 +15,22 @@
  */
 package com.github.nishgpt.chainexecutor.core.observability;
 
+import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
+import com.github.nishgpt.chainexecutor.core.observability.sink.impl.LogSink;
 import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfigurationVisitor;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.ClientDispatchSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Manager class for Chain Executor Observability feature. This class is responsible for holding the current
@@ -26,30 +40,79 @@ import java.util.Objects;
  */
 public class ChainExecutorObservabilityManager {
 
-  private static ChainExecutorObservationConfig observationConfig;
+  private static final Validator validator = Validation.buildDefaultValidatorFactory()
+      .getValidator();
+  private static final AtomicReference<ObservabilityManagerState> observabilityManagerState = new AtomicReference<>(
+      ObservabilityManagerState.empty());
 
   public static void init(final ChainExecutorObservationConfig config) {
     validate(config);
-    ChainExecutorObservabilityManager.observationConfig = config;
+    applyConfig(config);
   }
 
   public static void refreshConfig(final ChainExecutorObservationConfig config) {
-    //currently same as init, but can be extended to have different logic
     validate(config);
-    ChainExecutorObservabilityManager.observationConfig = config;
+    applyConfig(config);
   }
 
   protected static ChainExecutorObservationConfig getObservationConfig() {
-    if (Objects.isNull(observationConfig)) {
-      //client has probably opted out of observability, return a default config with all features disabled
-      observationConfig = ChainExecutorObservationConfig.builder()
-          .build();
+    final var observationConfig = observabilityManagerState.get()
+        .config();
+    return Objects.nonNull(observationConfig)
+        ? observationConfig
+        : ChainExecutorObservationConfig.builder()
+            .build();
+  }
+
+  private static void applyConfig(final ChainExecutorObservationConfig config) {
+    ObservabilityManagerState oldState;
+    //check if the new config is completely disabling the observability features.
+    if (!config.isEnabled()) {
+      oldState = observabilityManagerState.getAndSet(ObservabilityManagerState.empty());
+    } else {
+      //Should apply the config to all the relevant components, e.g. initialize sinks, set up threadpools etc.
+      final var sinks = buildSinks(config.getEnabledSinks());
+      final var executorService = Executors.newFixedThreadPool(config.getObservationThreadpoolSize());
+
+      //replace the old state with the new state atomically
+      oldState = observabilityManagerState.getAndSet(
+          new ObservabilityManagerState(config, sinks, executorService));
     }
-    return observationConfig;
+
+    //shutdown the old executor service if it exists
+    if (Objects.nonNull(oldState.executorService())) {
+      oldState.executorService()
+          .shutdown();
+    }
   }
 
   private static void validate(final ChainExecutorObservationConfig config) {
     //TODO:: add any validation logic for the config here, e.g. if certain features are enabled, required fields must be present etc.
+  }
+
+  private static Set<ObservationSink> buildSinks(final Set<ObservationSinkConfiguration> enabledSinks) {
+    final Set<ObservationSink> newSinks = new HashSet<>();
+    enabledSinks.forEach(sinkConfiguration -> sinkConfiguration.accept(new ObservationSinkConfigurationVisitor<Void>() {
+      @Override
+      public Void visit(LogSinkConfiguration configuration) {
+        newSinks.add(new LogSink(configuration));
+        return null;
+      }
+
+      @Override
+      public Void visit(ClientDispatchSinkConfiguration configuration) {
+        //TODO:: implement ClientDispatchSink and add to newSinks
+        return null;
+      }
+
+      @Override
+      public Void visit(StorageSinkConfiguration configuration) {
+        //TODO:: implement StorageSink and add to newSinks
+        return null;
+      }
+    }));
+
+    return Collections.unmodifiableSet(newSinks);
   }
 
 }

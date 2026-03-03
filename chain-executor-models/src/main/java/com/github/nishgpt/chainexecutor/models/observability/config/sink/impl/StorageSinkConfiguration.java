@@ -16,6 +16,7 @@
 package com.github.nishgpt.chainexecutor.models.observability.config.sink.impl;
 
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfigurationVisitor;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,4 +36,8 @@ public class StorageSinkConfiguration extends ObservationSinkConfiguration {
   @NotNull
   private StorageInfo storageInfo;
 
+  @Override
+  public <T> T accept(ObservationSinkConfigurationVisitor<T> visitor) {
+    return visitor.visit(this);
+  }
 }

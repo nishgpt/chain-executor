@@ -16,7 +16,10 @@
 package com.github.nishgpt.chainexecutor.models.observability.config.sink.impl;
 
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfigurationVisitor;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -30,6 +33,13 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class LogSinkConfiguration extends ObservationSinkConfiguration {
-  //TODO:: make this enumerated log level
-  private String logLevel;
+
+  @NotNull
+  @Builder.Default
+  private LogLevel logLevel = LogLevel.DEBUG;
+
+  @Override
+  public <T> T accept(ObservationSinkConfigurationVisitor<T> visitor) {
+    return visitor.visit(this);
+  }
 }

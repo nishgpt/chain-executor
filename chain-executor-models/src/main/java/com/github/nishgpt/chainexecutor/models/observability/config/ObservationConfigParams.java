@@ -26,7 +26,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class ChainExecutorObservationConfigParams {
+public class ObservationConfigParams {
 
   private boolean enabled;
   private ObservationDepth depth;
