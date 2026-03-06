@@ -66,8 +66,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <java.version>17</java.version>
-    <lombok.version>1.18.24</lombok.version>
-    <lombok.maven.version>1.18.20.0</lombok.maven.version>
+    <lombok.version>1.18.20</lombok.version>
     <slf4j.version>2.0.9</slf4j.version>
     <guice.version>5.1.0</guice.version>
     <aspectj.version>1.9.21</aspectj.version>

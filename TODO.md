@@ -9,3 +9,4 @@
 9. Update the cached stage executor factory impl to MethodHandle instead of Field
 10. Invoker details possible to get ?
 11. When enabling storage sink, need to check how to storage will look like, as stage or execution context id may not be available for all observations.
+12. Check if we can remove lombok dependency in core module and use explicit getters/setters/constructors in the codebase to avoid any issues with AspectJ.

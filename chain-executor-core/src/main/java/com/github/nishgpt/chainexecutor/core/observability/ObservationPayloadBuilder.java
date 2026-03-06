@@ -35,15 +35,13 @@ import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 
-@UtilityClass
 @Slf4j
 public class ObservationPayloadBuilder {
 
-  private Field EXECUTOR_FACTORY_FIELD;
+  private static Field EXECUTOR_FACTORY_FIELD;
 
   static {
     try {
@@ -55,7 +53,7 @@ public class ObservationPayloadBuilder {
     }
   }
 
-  private <T> T deepCopy(final Object data,
+  private static <T> T deepCopy(final Object data,
       final Class<T> targetClass) {
     try {
       byte[] serialized = mapper.writeValueAsBytes(data);
@@ -67,7 +65,7 @@ public class ObservationPayloadBuilder {
   }
 
   @SuppressWarnings("rawtypes")
-  ObservationPayload prepareBeforePayload(final Stage stage,
+  static ObservationPayload prepareBeforePayload(final Stage stage,
       final JoinPoint joinPoint,
       final String observationGroupId,
       final StageExecutorFactory executorFactory) {
@@ -110,7 +108,7 @@ public class ObservationPayloadBuilder {
   }
 
   @SuppressWarnings("rawtypes")
-  ObservationPayload prepareAfterPayload(final Stage stage,
+  static ObservationPayload prepareAfterPayload(final Stage stage,
       final JoinPoint joinPoint,
       final String observationGroupId,
       final Object methodResponse,
@@ -155,7 +153,7 @@ public class ObservationPayloadBuilder {
   }
 
   @SuppressWarnings("rawtypes")
-  ExecutorAuxiliaryKey extractAuxiliaryKey(final Object[] methodParams,
+  static ExecutorAuxiliaryKey extractAuxiliaryKey(final Object[] methodParams,
       final StageExecutorKey executorKey) {
     //try finding using direct method params
     var auxiliaryKey = extractField(methodParams, ExecutorAuxiliaryKey.class, false);
@@ -169,7 +167,7 @@ public class ObservationPayloadBuilder {
   }
 
   @SuppressWarnings("rawtypes")
-  StageExecutorFactory extractExecutorFactory(final JoinPoint joinPoint) {
+  static StageExecutorFactory extractExecutorFactory(final JoinPoint joinPoint) {
     try {
       //assuming target is always stage execution manager
       return (StageExecutorFactory) EXECUTOR_FACTORY_FIELD.get(joinPoint.getTarget());
@@ -179,7 +177,7 @@ public class ObservationPayloadBuilder {
     }
   }
 
-  Stage extractStage(final Object[] methodParams) {
+  static Stage extractStage(final Object[] methodParams) {
     for (Object methodParam : methodParams) {
       if (Stage.class.isAssignableFrom(methodParam.getClass())) {
         return (Stage) methodParam;
@@ -192,7 +190,7 @@ public class ObservationPayloadBuilder {
     return null;
   }
 
-  <T> T extractField(final Object[] methodParams,
+  static <T> T extractField(final Object[] methodParams,
       final Class<T> fieldClass,
       final boolean deepCopy) {
     for (Object methodParam : methodParams) {
@@ -205,7 +203,7 @@ public class ObservationPayloadBuilder {
   }
 
   @SuppressWarnings("unchecked")
-  <T> T extractField(final Object object,
+  static <T> T extractField(final Object object,
       final Class<T> fieldClass,
       final boolean deepCopy) {
     if (Objects.isNull(object)) {
@@ -221,7 +219,7 @@ public class ObservationPayloadBuilder {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  StageStatus extractStageStatus(StageExecutorKey executorKey,
+  static StageStatus extractStageStatus(StageExecutorKey executorKey,
       StageExecutorFactory executorFactory,
       ExecutionContext executionContext) {
     if (Objects.isNull(executorFactory) || Objects.isNull(executionContext) || Objects.isNull(executorKey)) {
