@@ -13,36 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.observability;
+package com.github.nishgpt.chainexecutor.models.observability.payload;
 
 import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
-import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
-import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
+import com.github.nishgpt.chainexecutor.models.observability.ObservationPhase;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
-import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
 import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 //TODO:: see if need to break into after and before separate payload classes
-public class ObservationPayload {
+public abstract class ObservationPayload {
 
   private String observationId; //unique identifier for the observation
+  private String observationGroupId; //ties multiple observations into one for a specific method execution
   private ObservationPhase phase;
   private String methodName;
-  //TODO:: method execution status - SUCCESS, FAILURE - for after invocation phase.
   private Stage stage;
   private StageStatus stageStatus;
-  private Exception exception;
   private ExecutionContext context;
-  private ExecutorAuxiliaryKey auxiliaryKey;
-  private StageChainIdentifier chainIdentifier;
-  private StageExecutionRequest request;
   private long timestampInMillis;
 }

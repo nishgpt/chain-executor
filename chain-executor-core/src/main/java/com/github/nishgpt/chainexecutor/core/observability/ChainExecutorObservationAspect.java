@@ -15,77 +15,89 @@
  */
 package com.github.nishgpt.chainexecutor.core.observability;
 
-import com.github.nishgpt.chainexecutor.models.execution.StageExecutorKey;
+import static com.github.nishgpt.chainexecutor.core.observability.ChainExecutorObservabilityManager.dispatch;
+import static com.github.nishgpt.chainexecutor.core.observability.ObservationPayloadBuilder.extractExecutorFactory;
+import static com.github.nishgpt.chainexecutor.core.observability.ObservationPayloadBuilder.extractStage;
+import static com.github.nishgpt.chainexecutor.core.observability.ObservationPayloadBuilder.prepareAfterPayload;
+import static com.github.nishgpt.chainexecutor.core.observability.ObservationPayloadBuilder.prepareBeforePayload;
+
+import com.github.nishgpt.chainexecutor.models.observability.MethodCriticality;
+import com.github.nishgpt.chainexecutor.models.observability.ObservedMethod;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
+import java.util.Objects;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
+@Slf4j
 @Aspect
 public class ChainExecutorObservationAspect {
 
-  @Pointcut("execution(* com.github.nishgpt.chainexecutor.core.execution.*(..))")
+  private static final ThreadLocal<String> GROUPING_ID = new ThreadLocal<>();
+
+  @Pointcut("execution(* com.github.nishgpt.chainexecutor.core.execution.StageExecutionManager.*(..))")
   public void executionManagerMethodCalled() {
   }
 
-  @Pointcut("@annotation(com.github.nishgpt.chainexecutor.models.observability.ObservedMethod)")
-  public void observedMethodCalled() {
-  }
-
-  @Around("executionManagerMethodCalled() && observedMethodCalled()")
-  public Object aroundExecutionManagerMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+  @Around("executionManagerMethodCalled() && @annotation(observedMethod)")
+  public Object aroundExecutionManagerMethod(ProceedingJoinPoint joinPoint,
+      ObservedMethod observedMethod) throws Throwable {
     // You can use the method name or any other relevant information for the observation
-    final var methodParams = joinPoint.getArgs();
-    final var stage = extractStage(methodParams);
-    final var config = ChainExecutorObservabilityManager.getObservationConfig();
+    final var stage = extractStage(joinPoint.getArgs());
 
-    //If observation config is not enabled for the stage, then proceed without observation
-    if (!config.getObservationConfig(stage)
-        .isEnabled()) {
+    //check if we can skip observation
+    if (skipObservation(stage, observedMethod.criticality())) {
       return joinPoint.proceed();
     }
-    //prepare an empty list of observation payloads
-    //prepare observation payload before method execution
+
+    //outermost invocation will be responsible for creating and managing observation group id which will be used to correlate all the observations for a particular execution flow.
+    final var isRootInvocation = Objects.isNull(GROUPING_ID.get());
+    final String observationGroupId = getObservationGroupId(isRootInvocation);
+    final var executorFactory = extractExecutorFactory(joinPoint);
+
+    //dispatch before payload
+    dispatch(prepareBeforePayload(stage, joinPoint, observationGroupId, executorFactory));
+
     try {
+      //proceed with method execution.
       final Object response = joinPoint.proceed();
-      //augment response into observation payload
+
+      //dispatch after payload for successful execution
+      dispatch(prepareAfterPayload(stage, joinPoint, observationGroupId, response, null, executorFactory));
       return response;
     } catch (Throwable t) {
-      //augment exception into observation payload and rethrow
+      //dispatch after payload for non-successful execution
+      dispatch(prepareAfterPayload(stage, joinPoint, observationGroupId, null, t, executorFactory));
       throw t;
     } finally {
-      //for each item in observation payload list call a dispatcher to publish the observation.
+      if (isRootInvocation) {
+        GROUPING_ID.remove();
+      }
     }
   }
 
-
-  //TODO:: functionality to extract a field from parent observation payload if the stage is not present in method params
-  private Stage extractStage(final Object[] methodParams) {
-    for (Object methodParam : methodParams) {
-      if (Stage.class.isAssignableFrom(methodParam.getClass())) {
-        return (Stage) methodParam;
-      }
-
-      if (StageExecutorKey.class.isAssignableFrom(methodParam.getClass())) {
-        return ((StageExecutorKey<? extends Stage, ?>) methodParam).getStage();
-      }
+  private String getObservationGroupId(boolean isRootInvocation) {
+    if (isRootInvocation) {
+      GROUPING_ID.set(UUID.randomUUID()
+          .toString());
     }
-    return null;
+    return GROUPING_ID.get(); //TODO:: check if we need to move to better/compact id convention
   }
 
-
-  //TODO:: check if the object needs to be snapshotted / deep copied or as is.
-  @SuppressWarnings("unchecked")
-  private <T> T extractField(final Object[] methodParams,
-      final Class<T> fieldClass) {
-    for (Object methodParam : methodParams) {
-      if (fieldClass.isAssignableFrom(methodParam.getClass())) {
-        return (T) methodParam;
-      }
+  private boolean skipObservation(final Stage stage,
+      final MethodCriticality methodCriticality) {
+    if (Objects.isNull(stage)) {
+      return true;
     }
-    return null;
+
+    final var stageConfigParams = ChainExecutorObservabilityManager.getObservationConfig()
+        .getConfigParams(stage);
+
+    //if stage observability is disabled or depth is not eligible
+    return !stageConfigParams.isEnabled() || !methodCriticality.getEligibleDepths()
+        .contains(stageConfigParams.getDepth());
   }
-
-
 }

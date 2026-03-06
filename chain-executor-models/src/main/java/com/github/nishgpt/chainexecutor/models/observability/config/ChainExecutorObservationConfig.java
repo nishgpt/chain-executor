@@ -48,7 +48,7 @@ public class ChainExecutorObservationConfig {
   @Builder.Default
   private Set<ObservationSinkConfiguration> enabledSinks = Set.of();
 
-  public ObservationConfigParams getObservationConfig(final Stage stage) {
+  public ObservationConfigParams getConfigParams(final Stage stage) {
     return stageWiseConfigParams.getOrDefault(stage, defaultConfigParams);
   }
 

@@ -74,6 +74,7 @@
     <reflections.version>0.9.9</reflections.version>
     <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
     <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
+    <jackson.databind.version>2.15.2</jackson.databind.version>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

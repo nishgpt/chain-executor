@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.observability.sink;
+package com.github.nishgpt.chainexecutor.models.observability;
 
-import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
-
-public interface ObservationSink {
-
-  void consume(ObservationPayload payload);
-
+public enum MethodExecutionOutcome {
+  SUCCESS,
+  FAILURE,
+  ;
 }

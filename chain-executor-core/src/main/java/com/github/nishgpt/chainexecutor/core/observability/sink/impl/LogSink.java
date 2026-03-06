@@ -16,7 +16,7 @@
 package com.github.nishgpt.chainexecutor.core.observability.sink.impl;
 
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
-import com.github.nishgpt.chainexecutor.models.observability.ObservationPayload;
+import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

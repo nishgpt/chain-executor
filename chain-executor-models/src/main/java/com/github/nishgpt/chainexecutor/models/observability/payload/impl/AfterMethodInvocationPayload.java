@@ -13,12 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.observability.sink;
+package com.github.nishgpt.chainexecutor.models.observability.payload.impl;
 
+import com.github.nishgpt.chainexecutor.models.observability.MethodExecutionOutcome;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-public interface ObservationSink {
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class AfterMethodInvocationPayload extends ObservationPayload {
 
-  void consume(ObservationPayload payload);
-
+  private MethodExecutionOutcome outcome;
+  private Exception exception;
 }

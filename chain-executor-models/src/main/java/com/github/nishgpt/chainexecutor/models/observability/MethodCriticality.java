@@ -15,9 +15,19 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability;
 
+import java.util.Set;
+import lombok.Getter;
+
 public enum MethodCriticality {
-  CRITICAL,
-  MEDIUM,
-  LOW,
+  CRITICAL(Set.of(ObservationDepth.STANDARD, ObservationDepth.GRANULAR)),
+  MEDIUM(Set.of(ObservationDepth.GRANULAR)),
+  LOW(Set.of(ObservationDepth.GRANULAR)),
   ;
+
+  @Getter
+  private Set<ObservationDepth> eligibleDepths;
+
+  MethodCriticality(Set<ObservationDepth> eligibleDepths) {
+    this.eligibleDepths = eligibleDepths;
+  }
 }

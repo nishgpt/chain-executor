@@ -15,6 +15,7 @@
  */
 package com.github.nishgpt.chainexecutor.core.observability;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
 import com.github.nishgpt.chainexecutor.core.observability.sink.impl.LogSink;
 import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
@@ -23,6 +24,7 @@ import com.github.nishgpt.chainexecutor.models.observability.config.sink.Observa
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.ClientDispatchSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.util.Collections;
@@ -44,8 +46,11 @@ public class ChainExecutorObservabilityManager {
       .getValidator();
   private static final AtomicReference<ObservabilityManagerState> observabilityManagerState = new AtomicReference<>(
       ObservabilityManagerState.empty());
+  protected static ObjectMapper mapper;
 
-  public static void init(final ChainExecutorObservationConfig config) {
+  public static void init(final ChainExecutorObservationConfig config,
+      final ObjectMapper mapper) {
+    ChainExecutorObservabilityManager.mapper = mapper;
     validate(config);
     applyConfig(config);
   }
@@ -58,10 +63,18 @@ public class ChainExecutorObservabilityManager {
   protected static ChainExecutorObservationConfig getObservationConfig() {
     final var observationConfig = observabilityManagerState.get()
         .config();
+    //should not be needed but adding as a fallback
     return Objects.nonNull(observationConfig)
         ? observationConfig
         : ChainExecutorObservationConfig.builder()
             .build();
+  }
+
+  protected static void dispatch(final ObservationPayload payload) {
+    final var state = observabilityManagerState.get();
+    state.sinks()
+        .forEach(sink -> state.executorService()
+            .submit(() -> sink.consume(payload)));
   }
 
   private static void applyConfig(final ChainExecutorObservationConfig config) {

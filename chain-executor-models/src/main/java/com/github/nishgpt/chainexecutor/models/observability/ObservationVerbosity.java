@@ -18,8 +18,27 @@ package com.github.nishgpt.chainexecutor.models.observability;
 //TODO:: better description for each enum value
 public enum ObservationVerbosity {
   //Will capture basic details only
-  BASIC,
+  BASIC {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visitBasic();
+    }
+  },
   //Will capture additional context of request, response etc.
-  VERBOSE,
+  VERBOSE {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visitVerbose();
+    }
+  },
   ;
+
+  public abstract <T> T accept(final Visitor<T> visitor);
+
+  public interface Visitor<T> {
+
+    T visitBasic();
+
+    T visitVerbose();
+  }
 }
