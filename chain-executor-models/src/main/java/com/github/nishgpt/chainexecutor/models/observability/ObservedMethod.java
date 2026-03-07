@@ -24,7 +24,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ObservedMethod {
 
-  String name();
-
   MethodCriticality criticality() default MethodCriticality.LOW;
 }

@@ -43,7 +43,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   private final StageExecutorFactory executorFactory;
 
   @SuppressWarnings("unchecked")
-  @ObservedMethod(name = "execute", criticality = MethodCriticality.CRITICAL)
+  @ObservedMethod(criticality = MethodCriticality.CRITICAL)
   public U execute(StageExecutorKey<T, K> stageExecutorKey,
       C chainIdentifier,
       U context,
@@ -101,6 +101,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
+  @ObservedMethod(criticality = MethodCriticality.CRITICAL)
   public U resume(StageExecutorKey<T, K> stageExecutorKey,
       C chainIdentifier,
       U context)
@@ -134,6 +135,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
+  @ObservedMethod(criticality = MethodCriticality.CRITICAL)
   public U initNext(StageExecutorKey<T, K> stageExecutorKey,
       C chainIdentifier,
       U context) {
@@ -179,6 +181,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
+  @ObservedMethod(criticality = MethodCriticality.MEDIUM)
   public U fetchInfo(StageExecutorKey<T, K> stageExecutorKey,
       C chainIdentifier,
       U context) {
@@ -201,6 +204,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   protected abstract U finishExecution(U context);
 
   @SuppressWarnings("unchecked")
+  @ObservedMethod
   protected T getFirstNonCompletedStage(C chainIdentifier,
       U context,
       K auxiliaryKey) {
@@ -227,6 +231,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
+  @ObservedMethod(criticality = MethodCriticality.MEDIUM)
   protected void validatePreviousStagesCompletion(C chainIdentifier,
       U context,
       K auxiliaryKey,
@@ -246,6 +251,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   @SuppressWarnings("unchecked")
+  @ObservedMethod
   private U performPostCompletionSteps(U context,
       StageExecutor executor,
       StageExecutorKey<T, K> stageExecutorKey,
@@ -260,6 +266,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
   //Validates stages going forward, skips if applicable until it finds a non-(completed/skipped) stage
   @SuppressWarnings("unchecked")
+  @ObservedMethod
   private void sweepForward(StageExecutorKey<T, K> stageExecutorKey,
       C chainIdentifier,
       U context) {
@@ -293,6 +300,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
 
   // Execute a stage after validating pre-execution conditions
   @SuppressWarnings("unchecked")
+  @ObservedMethod(criticality = MethodCriticality.MEDIUM)
   private U safeExecute(StageExecutorKey<T, K> stageExecutorKey,
       U context,
       StageExecutor executor,

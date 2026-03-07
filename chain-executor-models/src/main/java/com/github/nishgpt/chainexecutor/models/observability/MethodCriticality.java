@@ -25,7 +25,7 @@ public enum MethodCriticality {
   ;
 
   @Getter
-  private Set<ObservationDepth> eligibleDepths;
+  private final Set<ObservationDepth> eligibleDepths;
 
   MethodCriticality(Set<ObservationDepth> eligibleDepths) {
     this.eligibleDepths = eligibleDepths;
