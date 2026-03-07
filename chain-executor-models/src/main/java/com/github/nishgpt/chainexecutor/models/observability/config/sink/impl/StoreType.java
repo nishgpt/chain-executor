@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.observability;
+package com.github.nishgpt.chainexecutor.models.observability.config.sink.impl;
 
-import java.util.Set;
-import lombok.Getter;
-
-public enum MethodCriticality {
-  CRITICAL(Set.of(ObservationDepth.STANDARD, ObservationDepth.GRANULAR)),
-  MEDIUM(Set.of(ObservationDepth.GRANULAR)),
-  LOW(Set.of(ObservationDepth.GRANULAR)),
+public enum StoreType {
+  IN_MEMORY,
+  AEROSPIKE,
   ;
-
-  @Getter
-  private final Set<ObservationDepth> eligibleDepths;
-
-  MethodCriticality(Set<ObservationDepth> eligibleDepths) {
-    this.eligibleDepths = eligibleDepths;
-  }
 }

@@ -15,19 +15,11 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability;
 
-import java.util.Set;
-import lombok.Getter;
-
-public enum MethodCriticality {
-  CRITICAL(Set.of(ObservationDepth.STANDARD, ObservationDepth.GRANULAR)),
-  MEDIUM(Set.of(ObservationDepth.GRANULAR)),
-  LOW(Set.of(ObservationDepth.GRANULAR)),
+/**
+ * Enum to represent the phase of observation, whether it's before or after the invocation of a method.
+ */
+public enum ObservationPhase {
+  BEFORE_METHOD_INVOCATION,
+  AFTER_METHOD_INVOCATION,
   ;
-
-  @Getter
-  private final Set<ObservationDepth> eligibleDepths;
-
-  MethodCriticality(Set<ObservationDepth> eligibleDepths) {
-    this.eligibleDepths = eligibleDepths;
-  }
 }

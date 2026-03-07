@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.observability;
+package com.github.nishgpt.chainexecutor.models.observability.config;
 
+import com.github.nishgpt.chainexecutor.models.observability.ObservationDepth;
+import com.github.nishgpt.chainexecutor.models.observability.ObservationVerbosity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ChainExecutorObservationConfig {
+@SuperBuilder
+public class ObservationConfigParams {
 
   private boolean enabled;
+  private ObservationDepth depth;
+  private ObservationVerbosity verbosity;
 }

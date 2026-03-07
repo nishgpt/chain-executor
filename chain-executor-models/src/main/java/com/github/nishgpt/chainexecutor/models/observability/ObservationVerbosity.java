@@ -15,19 +15,30 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability;
 
-import java.util.Set;
-import lombok.Getter;
-
-public enum MethodCriticality {
-  CRITICAL(Set.of(ObservationDepth.STANDARD, ObservationDepth.GRANULAR)),
-  MEDIUM(Set.of(ObservationDepth.GRANULAR)),
-  LOW(Set.of(ObservationDepth.GRANULAR)),
+//TODO:: better description for each enum value
+public enum ObservationVerbosity {
+  //Will capture basic details only
+  BASIC {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visitBasic();
+    }
+  },
+  //Will capture additional context of request, response etc.
+  VERBOSE {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visitVerbose();
+    }
+  },
   ;
 
-  @Getter
-  private final Set<ObservationDepth> eligibleDepths;
+  public abstract <T> T accept(final Visitor<T> visitor);
 
-  MethodCriticality(Set<ObservationDepth> eligibleDepths) {
-    this.eligibleDepths = eligibleDepths;
+  public interface Visitor<T> {
+
+    T visitBasic();
+
+    T visitVerbose();
   }
 }

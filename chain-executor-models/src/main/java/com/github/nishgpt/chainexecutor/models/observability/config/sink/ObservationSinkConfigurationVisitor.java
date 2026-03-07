@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.observability;
+package com.github.nishgpt.chainexecutor.models.observability.config.sink;
 
-import java.util.Set;
-import lombok.Getter;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.ClientDispatchSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
 
-public enum MethodCriticality {
-  CRITICAL(Set.of(ObservationDepth.STANDARD, ObservationDepth.GRANULAR)),
-  MEDIUM(Set.of(ObservationDepth.GRANULAR)),
-  LOW(Set.of(ObservationDepth.GRANULAR)),
-  ;
+public interface ObservationSinkConfigurationVisitor<T> {
 
-  @Getter
-  private final Set<ObservationDepth> eligibleDepths;
+  T visit(LogSinkConfiguration configuration);
 
-  MethodCriticality(Set<ObservationDepth> eligibleDepths) {
-    this.eligibleDepths = eligibleDepths;
-  }
+  T visit(ClientDispatchSinkConfiguration configuration);
+
+  T visit(StorageSinkConfiguration configuration);
+
 }
