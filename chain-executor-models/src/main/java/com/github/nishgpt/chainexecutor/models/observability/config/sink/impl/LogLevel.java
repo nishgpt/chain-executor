@@ -15,19 +15,35 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability.config.sink.impl;
 
-import lombok.Getter;
-import org.slf4j.event.Level;
-
 public enum LogLevel {
-  INFO(Level.INFO),
-  DEBUG(Level.DEBUG),
-  TRACE(Level.TRACE),
+  TRACE {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visitTrace();
+    }
+  },
+  DEBUG {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visitDebug();
+    }
+  },
+  INFO {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visitInfo();
+    }
+  },
   ;
 
-  @Getter
-  private final Level level;
+  public abstract <T> T accept(Visitor<T> visitor);
 
-  LogLevel(final Level level) {
-    this.level = level;
+  public interface Visitor<T> {
+
+    T visitTrace();
+
+    T visitDebug();
+
+    T visitInfo();
   }
 }

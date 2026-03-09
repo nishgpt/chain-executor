@@ -16,8 +16,9 @@
 package com.github.nishgpt.chainexecutor.core.observability.sink.impl;
 
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
-import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogLevel.Visitor;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,11 +26,30 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class LogSink implements ObservationSink {
 
+  private static final String LOG_MESSAGE = "Observation consumed {}";
   private final LogSinkConfiguration configuration;
 
   @Override
   public void consume(final ObservationPayload payload) {
-    log.atLevel(configuration.getLogLevel().getLevel())
-        .log("Observation consumed {}", payload);
+    configuration.getLogLevel()
+        .accept(new Visitor<Void>() {
+          @Override
+          public Void visitTrace() {
+            log.trace(LOG_MESSAGE, payload);
+            return null;
+          }
+
+          @Override
+          public Void visitDebug() {
+            log.debug(LOG_MESSAGE, payload);
+            return null;
+          }
+
+          @Override
+          public Void visitInfo() {
+            log.info(LOG_MESSAGE, payload);
+            return null;
+          }
+        });
   }
 }
