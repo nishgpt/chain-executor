@@ -534,7 +534,7 @@ ChainExecutorObservabilityManager.init(
     ChainExecutorObservationConfig.builder()
         .enabled(true)
         .enabledSinks(Set.of(
-            ClientDispatchSinkConfiguration.builder()
+            CustomSinkConfiguration.builder()
                 .processor(payload -> {
                     // Custom processing logic
                 })

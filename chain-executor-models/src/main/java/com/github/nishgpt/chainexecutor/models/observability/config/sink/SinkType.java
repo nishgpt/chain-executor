@@ -17,7 +17,7 @@ package com.github.nishgpt.chainexecutor.models.observability.config.sink;
 
 public enum SinkType {
   LOG,
-  CLIENT_DISPATCH,
+  CUSTOM,
   STORAGE,
   ;
 }

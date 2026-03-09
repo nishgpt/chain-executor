@@ -15,7 +15,7 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability.config.sink;
 
-import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.ClientDispatchSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.CustomSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
 
@@ -23,7 +23,7 @@ public interface ObservationSinkConfigurationVisitor<T> {
 
   T visit(LogSinkConfiguration configuration);
 
-  T visit(ClientDispatchSinkConfiguration configuration);
+  T visit(CustomSinkConfiguration configuration);
 
   T visit(StorageSinkConfiguration configuration);
 

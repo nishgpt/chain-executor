@@ -17,14 +17,17 @@ package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
-import com.github.nishgpt.chainexecutor.core.observability.sink.impl.LogSink;
+import com.github.nishgpt.chainexecutor.core.observability.sink.custom.CustomSink;
+import com.github.nishgpt.chainexecutor.core.observability.sink.log.LogSink;
+import com.github.nishgpt.chainexecutor.models.observability.ChainExecutorObserver;
 import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfigurationVisitor;
-import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.ClientDispatchSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.CustomSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
+import com.google.inject.Injector;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.util.Collections;
@@ -33,6 +36,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import org.reflections.Reflections;
 
 /**
  * Manager class for Chain Executor Observability feature. This class is responsible for holding the current
@@ -47,10 +51,13 @@ public class ChainExecutorObservabilityManager {
   private static final AtomicReference<ObservabilityManagerState> observabilityManagerState = new AtomicReference<>(
       ObservabilityManagerState.empty());
   protected static ObjectMapper mapper;
+  private static Injector injector;
 
   public static void init(final ChainExecutorObservationConfig config,
-      final ObjectMapper mapper) {
+      final ObjectMapper mapper,
+      final Injector injector) {
     ChainExecutorObservabilityManager.mapper = mapper;
+    ChainExecutorObservabilityManager.injector = injector;
     validate(config);
     applyConfig(config);
   }
@@ -101,6 +108,7 @@ public class ChainExecutorObservabilityManager {
 
   private static void validate(final ChainExecutorObservationConfig config) {
     //TODO:: add any validation logic for the config here, e.g. if certain features are enabled, required fields must be present etc.
+    // do a thorough check on all fields injector, mapper, sinks configurations, params etc.
   }
 
   private static Set<ObservationSink> buildSinks(final Set<ObservationSinkConfiguration> enabledSinks) {
@@ -113,8 +121,17 @@ public class ChainExecutorObservabilityManager {
       }
 
       @Override
-      public Void visit(ClientDispatchSinkConfiguration configuration) {
-        //TODO:: implement ClientDispatchSink and add to newSinks
+      public Void visit(CustomSinkConfiguration configuration) {
+        final var reflections = new Reflections(configuration.getObserverPackage());
+        final var annotatedClasses = reflections.getTypesAnnotatedWith(ChainExecutorObserver.class);
+
+        annotatedClasses.stream()
+            .findFirst()
+            .ifPresent(annotatedClass -> {
+              if (ObservationSink.class.isAssignableFrom(annotatedClass)) {
+                newSinks.add((ObservationSink) injector.getInstance(annotatedClass));
+              }
+            });
         return null;
       }
 

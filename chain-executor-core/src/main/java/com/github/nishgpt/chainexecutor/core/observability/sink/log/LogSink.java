@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.observability.sink.impl;
+package com.github.nishgpt.chainexecutor.core.observability.sink.log;
 
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
@@ -28,7 +28,7 @@ public class LogSink implements ObservationSink {
   private final LogSinkConfiguration configuration;
 
   @Override
-  public void consume(ObservationPayload payload) {
+  public void consume(final ObservationPayload payload) {
     log.atLevel(configuration.getLogLevel().getLevel())
         .log("Observation consumed {}", payload);
   }
