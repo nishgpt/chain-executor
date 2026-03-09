@@ -17,8 +17,7 @@ package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
-import com.github.nishgpt.chainexecutor.core.observability.sink.custom.CustomSink;
-import com.github.nishgpt.chainexecutor.core.observability.sink.log.LogSink;
+import com.github.nishgpt.chainexecutor.core.observability.sink.impl.LogSink;
 import com.github.nishgpt.chainexecutor.models.observability.ChainExecutorObserver;
 import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;

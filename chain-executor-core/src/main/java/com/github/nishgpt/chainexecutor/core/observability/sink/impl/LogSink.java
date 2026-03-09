@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core.observability.sink.log;
+package com.github.nishgpt.chainexecutor.core.observability.sink.impl;
 
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
