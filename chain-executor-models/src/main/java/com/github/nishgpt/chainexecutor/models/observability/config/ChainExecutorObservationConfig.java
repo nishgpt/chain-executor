@@ -17,9 +17,9 @@ package com.github.nishgpt.chainexecutor.models.observability.config;
 
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
-import jakarta.validation.Valid;
 import java.util.Map;
 import java.util.Set;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

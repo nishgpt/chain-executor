@@ -27,14 +27,14 @@ import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.Lo
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
 import com.google.inject.Injector;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import org.reflections.Reflections;
 
 /**

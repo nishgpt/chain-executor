@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.CustomSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
