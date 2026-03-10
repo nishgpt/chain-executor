@@ -15,6 +15,14 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability.config.sink;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.CustomSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +37,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
+@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "sinkType", visible = true)
+@JsonSubTypes({
+    @Type(value = LogSinkConfiguration.class, name = "LOG"),
+    @Type(value = CustomSinkConfiguration.class, name = "CUSTOM"),
+    @Type(value = StorageSinkConfiguration.class, name = "STORAGE"),
+})
 public abstract class ObservationSinkConfiguration {
 
   @NotNull

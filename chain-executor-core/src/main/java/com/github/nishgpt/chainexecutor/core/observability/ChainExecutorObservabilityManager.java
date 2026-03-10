@@ -43,6 +43,7 @@ import org.reflections.Reflections;
  * refreshing of the configuration, ensuring that all components have access to the latest settings for observability
  * features.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ChainExecutorObservabilityManager {
 
   private static final Validator validator = Validation.buildDefaultValidatorFactory()

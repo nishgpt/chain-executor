@@ -20,4 +20,5 @@ public enum SinkType {
   CUSTOM,
   STORAGE,
   ;
+  //TODO:: add string constants
 }
