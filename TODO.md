@@ -12,14 +12,13 @@
 12. Check if we can remove lombok dependency in core module and use explicit getters/setters/constructors in the codebase to avoid any issues with AspectJ.
 13. execution id for observations where execution context is present.
 14. While logging is it possible to pass the traceId also to correlate the logs with the execution flow in the service.
+15. private method access modifiers at relevant places for ObservationPayloadBuilder
+16. Make relevant DTOs as record
 
 Issues observed on testing : to be fixed 
 1. Fields coming null :
-   1. StageExecutorKey
-   2. auxiliary key
-   3. StageExecutionRequest
-   4. ExecutionContext (deep copy issue, no matching constructors)
-   5. StageStatus - either of the above necessary items are null
+   1. ExecutionContext (deep copy issue, no matching constructors)
+   2. StageStatus - either of the above necessary items are null
 2. Fix Extraction of Stage-
    1. first check if the stage executor is present and extract executorKeys and get one and then get stage from the executorKey
    2. if there is no stage executor then extract it from method params

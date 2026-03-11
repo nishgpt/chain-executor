@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.execution;
+package com.github.nishgpt.chainexecutor.core;
 
+import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
+@Builder
 @Data
 @NoArgsConstructor
-@SuperBuilder
-public abstract class ExecutionContext {
+@AllArgsConstructor
+public class TestAuxiliaryKey implements ExecutorAuxiliaryKey {
 
-  /**
-   * Unique id for tracking execution across stages, clients can implement this as per their needs.
-   */
-  public abstract String getId();
-
+  private String key;
 }

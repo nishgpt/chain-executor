@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.execution;
+package com.github.nishgpt.chainexecutor.core;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import com.github.nishgpt.chainexecutor.models.stage.Stage;
 
-@Data
-@NoArgsConstructor
-@SuperBuilder
-public abstract class ExecutionContext {
-
-  /**
-   * Unique id for tracking execution across stages, clients can implement this as per their needs.
-   */
-  public abstract String getId();
-
+public enum TestStage implements Stage {
+  STAGE1,
+  STAGE2,
+  STAGE3,
+  ;
 }
