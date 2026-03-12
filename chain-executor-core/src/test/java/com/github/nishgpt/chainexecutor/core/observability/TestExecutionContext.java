@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.models.execution;
+package com.github.nishgpt.chainexecutor.core.observability;
 
+import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
+import java.util.Map;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@EqualsAndHashCode
-public class ExecutionContext {
+@EqualsAndHashCode(callSuper = true)
+public class TestExecutionContext extends ExecutionContext {
 
-  /**
-   * Unique id for tracking execution across stages, clients can implement this as per their needs.
-   */
-  private String id;
-
+  private String applicationId;
+  private String applicationStatus;
+  private Map<TestStage, String> stageStatus;
 }

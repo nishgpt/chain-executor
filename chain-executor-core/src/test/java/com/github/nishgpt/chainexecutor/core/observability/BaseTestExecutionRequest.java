@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core;
+package com.github.nishgpt.chainexecutor.core.observability;
 
-import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
+import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
+import com.github.nishgpt.chainexecutor.models.stage.Stage;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
-@Builder
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class TestAuxiliaryKey implements ExecutorAuxiliaryKey {
+@SuperBuilder
+@EqualsAndHashCode
+public abstract class BaseTestExecutionRequest implements StageExecutionRequest {
 
-  private String key;
+  public abstract Stage getStage();
+
 }

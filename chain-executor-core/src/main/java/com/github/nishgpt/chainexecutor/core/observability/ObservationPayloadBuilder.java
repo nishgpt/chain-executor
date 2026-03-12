@@ -53,11 +53,12 @@ public class ObservationPayloadBuilder {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private static <T> T deepCopy(final Object data,
       final Class<T> targetClass) {
     try {
       byte[] serialized = mapper.writeValueAsBytes(data);
-      return mapper.readValue(serialized, targetClass);
+      return (T) mapper.readValue(serialized, data.getClass());
     } catch (Exception e) {
       log.warn("Failed to deep copy object of type {}, returning null", targetClass.getName(), e);
       return null;

@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core;
+package com.github.nishgpt.chainexecutor.core.observability;
 
-import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
-@Data
-@AllArgsConstructor
 @SuperBuilder
-@EqualsAndHashCode
-public abstract class BaseTestExecutionRequest implements StageExecutionRequest {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class TestStageExecutionRequest extends BaseTestExecutionRequest {
 
-  public abstract Stage getStage();
+  private String requestId;
+  private String payload;
 
+  @Override
+  public Stage getStage() {
+    return TestStage.STAGE1;
+  }
 }

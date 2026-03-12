@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.nishgpt.chainexecutor.core;
+package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
 

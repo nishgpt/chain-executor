@@ -72,8 +72,10 @@
     <aspectj.version>1.9.21</aspectj.version>
     <reflections.version>0.9.9</reflections.version>
     <jakarta.validation-api.version>2.0.2</jakarta.validation-api.version>
-    <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
+    <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
+    <jakarta.el.version>3.0.0</jakarta.el.version>
     <jackson.databind.version>2.15.2</jackson.databind.version>
+    <junit-bom.version>5.8.2</junit-bom.version>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -117,6 +119,21 @@
         <artifactId>jakarta.validation-api</artifactId>
         <version>${jakarta.validation-api.version}</version>
         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.el</artifactId>
+        <version>${jakarta.el.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit-bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
