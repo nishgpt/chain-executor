@@ -180,12 +180,12 @@ public class ObservationPayloadBuilder {
 
   static Stage extractStage(final Object[] methodParams) {
     for (Object methodParam : methodParams) {
-      if (Stage.class.isAssignableFrom(methodParam.getClass())) {
-        return (Stage) methodParam;
-      }
-
       if (StageExecutorKey.class.isAssignableFrom(methodParam.getClass())) {
         return ((StageExecutorKey<? extends Stage, ?>) methodParam).getStage();
+      }
+
+      if (Stage.class.isAssignableFrom(methodParam.getClass())) {
+        return (Stage) methodParam;
       }
     }
     return null;

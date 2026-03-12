@@ -21,11 +21,11 @@ import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
 import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
 import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
 import com.github.nishgpt.chainexecutor.models.execution.StageExecutorKey;
+import com.github.nishgpt.chainexecutor.models.observability.MethodCriticality;
+import com.github.nishgpt.chainexecutor.models.observability.ObservedMethod;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
 import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
 import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
-import com.github.nishgpt.chainexecutor.models.observability.MethodCriticality;
-import com.github.nishgpt.chainexecutor.models.observability.ObservedMethod;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -152,21 +152,23 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
         return finishExecution(context);
       }
 
-      final var executor = getExecutor(nextStage, stageExecutorKey.getAuxiliaryKey());
+      final var nextExecutorKey = getStageExecutorKey(nextStage, stageExecutorKey.getAuxiliaryKey());
+      final var nextExecutor = getExecutor(nextExecutorKey);
       // If stage is not initiated, call init
-      if (executor.getStageStatus(context)
+      if (nextExecutor.getStageStatus(context)
           .isNotInitiated()) {
         log.info("Initiating {} Stage for id - {}", nextStage, context.getId());
-        context = (U) executor.init(context);
+        context = (U) nextExecutor.init(context);
       }
 
       // Background stage. Auto execute
-      if (executor.isBackground(context) && executor.getStageStatus(context)
+      if (nextExecutor.isBackground(context) && nextExecutor.getStageStatus(context)
           .isExecutable()) {
-        context = safeExecute(stageExecutorKey, context, executor, null);
-        StageStatus stageStatus = executor.getStageStatus(context);
+        context = safeExecute(nextExecutorKey, context, nextExecutor, null);
+        StageStatus stageStatus = nextExecutor.getStageStatus(context);
         if (stageStatus.isCompletedOrSkipped()) {
-          return performPostCompletionSteps(context, executor, stageExecutorKey, //TODO:: should pass new stageExecutorKey here instead of the current one. Refactor to avoid confusion
+          return performPostCompletionSteps(context, nextExecutor,
+              nextExecutorKey,
               chainIdentifier);
         }
       }
@@ -221,13 +223,10 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     return currentStage;
   }
 
+  //for clients to use if needed
   protected StageExecutor getExecutor(T stage,
       K auxiliaryKey) {
-    final var executorKey = StageExecutorKey.<T, K>builder()
-        .stage(stage)
-        .auxiliaryKey(auxiliaryKey)
-        .build();
-    return executorFactory.getExecutor(executorKey);
+    return getExecutor(getStageExecutorKey(stage, auxiliaryKey));
   }
 
   @SuppressWarnings("unchecked")
@@ -248,6 +247,18 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       }
       currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     }
+  }
+
+  private StageExecutor getExecutor(final StageExecutorKey<T, K> stageExecutorKey) {
+    return executorFactory.getExecutor(stageExecutorKey);
+  }
+
+  private StageExecutorKey<T, K> getStageExecutorKey(final T stage,
+      final K auxiliaryKey) {
+    return StageExecutorKey.<T, K>builder()
+        .stage(stage)
+        .auxiliaryKey(auxiliaryKey)
+        .build();
   }
 
   @SuppressWarnings("unchecked")
