@@ -14,6 +14,7 @@
 14. [ ] private method access modifiers at relevant places for ObservationPayloadBuilder
 15. [ ] Make relevant DTOs as record
 16. [ ] Update LLD doc with the finalized design and implementation details.
+17. [ ] Remove usage of phonepe specific nomenclature and infrastructure from documents. 
 
 ~~Issues observed on testing : to be fixed~~ 
 ~~1. Fields coming null :~~
