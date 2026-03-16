@@ -93,43 +93,43 @@ The **Chain Executor Observability** is a new feature designed to provide method
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           Client Application                                 │
+│                           Client Application                                │
 │                                                                             │
-│   ┌─────────────────┐         ┌─────────────────┐                          │
-│   │  Your Service   │────────▶│  Chain Executor │                          │
-│   │                 │         │  (with AOP)     │                          │
-│   └─────────────────┘         └────────┬────────┘                          │
+│   ┌─────────────────┐         ┌─────────────────┐                           │
+│   │  Your Service   │────────▶│  Chain Executor │                           │
+│   │                 │         │  (with AOP)     │                           │
+│   └─────────────────┘         └────────┬────────┘                           │
 │                                        │                                    │
 │                                        ▼                                    │
-│                           ┌────────────────────────┐                       │
-│                           │  Observation Aspect    │                       │
-│                           │  ┌──────────────────┐  │                       │
-│                           │  │ Intercept Method │  │                       │
-│                           │  │ ───────────────▶ │  │                       │
-│                           │  │ Capture BEFORE   │  │                       │
-│                           │  │ ───────────────▶ │  │                       │
-│                           │  │ Execute Method   │  │                       │
-│                           │  │ ───────────────▶ │  │                       │
-│                           │  │ Capture AFTER    │  │                       │
-│                           │  └──────────────────┘  │                       │
-│                           └───────────┬────────────┘                       │
+│                           ┌────────────────────────┐                        │
+│                           │  Observation Aspect    │                        │
+│                           │  ┌──────────────────┐  │                        │
+│                           │  │ Intercept Method │  │                        │
+│                           │  │ ───────────────▶ │  │                        │
+│                           │  │ Capture BEFORE   │  │                        │
+│                           │  │ ───────────────▶ │  │                        │
+│                           │  │ Execute Method   │  │                        │
+│                           │  │ ───────────────▶ │  │                        │
+│                           │  │ Capture AFTER    │  │                        │
+│                           │  └──────────────────┘  │                        │
+│                           └───────────┬────────────┘                        │
 │                                       │                                     │
 │                                       ▼                                     │
-│                           ┌────────────────────────┐                       │
-│                           │  Observability Manager │                       │
-│                           │  ┌──────────────────┐  │                       │
-│                           │  │ Async Dispatch   │  │                       │
-│                           │  │ to Sinks         │  │                       │
-│                           │  └──────────────────┘  │                       │
-│                           └───────────┬────────────┘                       │
+│                           ┌────────────────────────┐                        │
+│                           │  Observability Manager │                        │
+│                           │  ┌──────────────────┐  │                        │
+│                           │  │ Async Dispatch   │  │                        │
+│                           │  │ to Sinks         │  │                        │
+│                           │  └──────────────────┘  │                        │
+│                           └───────────┬────────────┘                        │
 │                                       │                                     │
-│               ┌───────────────────────┼───────────────────────┐            │
-│               ▼                       ▼                       ▼            │
-│        ┌───────────┐           ┌───────────┐           ┌───────────┐      │
-│        │  Log Sink │           │  Custom   │           │  Storage  │      │
-│        │  (Built-  │           │  Sink     │           │  Sink     │      │
-│        │   in)     │           │  (Client) │           │  (Future) │      │
-│        └───────────┘           └───────────┘           └───────────┘      │
+│               ┌───────────────────────┼───────────────────────┐             │
+│               ▼                       ▼                       ▼             │
+│        ┌───────────┐           ┌───────────┐           ┌───────────┐        │
+│        │  Log Sink │           │  Custom   │           │  Storage  │        │
+│        │  (Built-  │           │  Sink     │           │  Sink     │        │
+│        │   in)     │           │  (Client) │           │  (Future) │        │
+│        └───────────┘           └───────────┘           └───────────┘        │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -153,33 +153,33 @@ AOP is a programming paradigm that allows you to add behavior to existing code *
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Method Execution Flow                         │
+│                    Method Execution Flow                        │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
+│                                                                 │
 │  1. Method called (e.g., execute())                             │
-│           │                                                      │
-│           ▼                                                      │
+│           │                                                     │
+│           ▼                                                     │
 │  2. Aspect intercepts ─────────────────┐                        │
-│           │                            │                         │
-│           ▼                            ▼                         │
+│           │                            │                        │
+│           ▼                            ▼                        │
 │  3. Extract stage, context,    4. Build BEFORE payload          │
-│     executor info                      │                         │
-│           │                            │                         │
-│           │                            ▼                         │
+│     executor info                      │                        │
+│           │                            │                        │
+│           │                            ▼                        │
 │           │                    5. Dispatch to sinks (async)     │
-│           │                                                      │
-│           ▼                                                      │
+│           │                                                     │
+│           ▼                                                     │
 │  6. Proceed with actual method execution                        │
-│           │                                                      │
-│           ▼                                                      │
+│           │                                                     │
+│           ▼                                                     │
 │  7. Method completes (success/failure)                          │
-│           │                                                      │
-│           ▼                                                      │
-│  8. Build AFTER payload ─────▶ 9. Dispatch to sinks (async)    │
-│           │                                                      │
-│           ▼                                                      │
+│           │                                                     │
+│           ▼                                                     │
+│  8. Build AFTER payload ─────▶ 9. Dispatch to sinks (async)     │
+│           │                                                     │
+│           ▼                                                     │
 │  10. Return result to caller                                    │
-│                                                                  │
+│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
