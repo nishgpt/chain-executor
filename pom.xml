@@ -23,7 +23,7 @@
 
   <groupId>com.github.nishgpt</groupId>
   <artifactId>chain-executor</artifactId>
-  <version>0.1.0-OB-ALPHA2-SNAPSHOT</version>
+  <version>0.1.0-OB-ALPHA2</version>
   <packaging>pom</packaging>
 
   <licenses>
