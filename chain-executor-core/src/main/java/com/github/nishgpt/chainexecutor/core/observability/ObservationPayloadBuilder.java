@@ -32,7 +32,8 @@ import com.github.nishgpt.chainexecutor.models.observability.payload.impl.Before
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
 import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
 import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
-import java.lang.reflect.Field;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -41,13 +42,15 @@ import org.aspectj.lang.JoinPoint;
 @Slf4j
 public class ObservationPayloadBuilder {
 
-  private static Field EXECUTOR_FACTORY_FIELD;
+  private static MethodHandle EXECUTOR_FACTORY_GETTER;
 
   static {
     try {
-      EXECUTOR_FACTORY_FIELD = StageExecutionManager.class.getDeclaredField("executorFactory");
-      EXECUTOR_FACTORY_FIELD.setAccessible(true);
-    } catch (NoSuchFieldException e) {
+      final var field = StageExecutionManager.class.getDeclaredField("executorFactory");
+      field.setAccessible(true);
+      EXECUTOR_FACTORY_GETTER = MethodHandles.lookup()
+          .unreflectGetter(field);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
       //should not happen ideally
       log.warn("No executorFactory field found in StageExecutionManager. Observability will not work as expected.", e);
     }
@@ -171,8 +174,8 @@ public class ObservationPayloadBuilder {
   static StageExecutorFactory extractExecutorFactory(final JoinPoint joinPoint) {
     try {
       //assuming target is always stage execution manager
-      return (StageExecutorFactory) EXECUTOR_FACTORY_FIELD.get(joinPoint.getTarget());
-    } catch (IllegalAccessException e) {
+      return (StageExecutorFactory) EXECUTOR_FACTORY_GETTER.invoke(joinPoint.getTarget());
+    } catch (Throwable e) {
       log.warn("Unable to extract executor factory from execution manager for observation", e);
       return null;
     }
