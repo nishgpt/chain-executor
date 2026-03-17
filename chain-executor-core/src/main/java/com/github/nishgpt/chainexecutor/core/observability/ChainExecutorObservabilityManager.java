@@ -50,7 +50,7 @@ public class ChainExecutorObservabilityManager {
       .getValidator();
   private static final AtomicReference<ObservabilityManagerState> observabilityManagerState = new AtomicReference<>(
       ObservabilityManagerState.empty());
-  protected static ObjectMapper mapper;
+  public static ObjectMapper mapper;
   private static Injector injector;
 
   public static void init(final ChainExecutorObservationConfig config,

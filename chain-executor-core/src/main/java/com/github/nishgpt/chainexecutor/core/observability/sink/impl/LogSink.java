@@ -15,6 +15,7 @@
  */
 package com.github.nishgpt.chainexecutor.core.observability.sink.impl;
 
+import com.github.nishgpt.chainexecutor.core.observability.ChainExecutorObservabilityManager;
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogLevel.Visitor;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
@@ -26,30 +27,35 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class LogSink implements ObservationSink {
 
-  private static final String LOG_MESSAGE = "Observation consumed {}";
-  private final LogSinkConfiguration configuration;
+    private static final String LOG_MESSAGE = "Observation consumed {}";
+    private final LogSinkConfiguration configuration;
 
-  @Override
-  public void consume(final ObservationPayload payload) {
-    configuration.getLogLevel()
-        .accept(new Visitor<Void>() {
-          @Override
-          public Void visitTrace() {
-            log.trace(LOG_MESSAGE, payload);
-            return null;
-          }
+    @Override
+    public void consume(final ObservationPayload payload) {
+        try {
+            final var serPayload = ChainExecutorObservabilityManager.mapper.writeValueAsString(payload);
+            configuration.getLogLevel()
+                    .accept(new Visitor<Void>() {
+                        @Override
+                        public Void visitTrace() {
+                            log.trace(LOG_MESSAGE, serPayload);
+                            return null;
+                        }
 
-          @Override
-          public Void visitDebug() {
-            log.debug(LOG_MESSAGE, payload);
-            return null;
-          }
+                        @Override
+                        public Void visitDebug() {
+                            log.debug(LOG_MESSAGE, serPayload);
+                            return null;
+                        }
 
-          @Override
-          public Void visitInfo() {
-            log.info(LOG_MESSAGE, payload);
-            return null;
-          }
-        });
-  }
+                        @Override
+                        public Void visitInfo() {
+                            log.info(LOG_MESSAGE, serPayload);
+                            return null;
+                        }
+                    });
+        } catch (Exception e) {
+            log.warn("Error logging observation payload, error: {}", e.getMessage());
+        }
+    }
 }
