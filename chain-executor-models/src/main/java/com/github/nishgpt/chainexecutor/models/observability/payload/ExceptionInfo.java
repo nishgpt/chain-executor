@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class ExceptionInfo {
 
-  private String errorMessage;
+  private String message;
   private String exceptionClass;
   private String causeMessage;
   private String causeClass;
@@ -23,9 +23,9 @@ public class ExceptionInfo {
     }
 
     return ExceptionInfo.builder()
-        .errorMessage(throwable.getMessage())
+        .message(throwable.getMessage())
         .exceptionClass(throwable.getClass()
-            .getSimpleName())
+            .getName())
         .causeMessage(Objects.nonNull(throwable.getCause())
             ? throwable.getCause()
             .getMessage()
@@ -33,7 +33,7 @@ public class ExceptionInfo {
         .causeClass(Objects.nonNull(throwable.getCause())
             ? throwable.getCause()
             .getClass()
-            .getSimpleName()
+            .getName()
             : null)
         .build();
   }

@@ -16,9 +16,10 @@
 package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.github.nishgpt.chainexecutor.core.BaseTest;
+import com.github.nishgpt.chainexecutor.models.error.ChainExecutorException;
 import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
 import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
-import java.io.IOException;
+import com.github.nishgpt.chainexecutor.models.observability.payload.ExceptionInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +36,23 @@ class ObservationPayloadBuilderTest extends BaseTest {
   }
 
   @Test
-  void testExecutionContextExtraction() throws IOException {
+  void testExecutionContextExtraction() {
     final var extractedContext = ObservationPayloadBuilder.extractField(EXECUTION_CONTEXT, ExecutionContext.class,
         true);
     Assertions.assertEquals(EXECUTION_CONTEXT, extractedContext);
+  }
+
+  @Test
+  void testExceptionInfoPreparation() {
+    final var exception = ChainExecutorException.builder()
+        .cause(new RuntimeException("Runtime error occured"))
+        .message("ChainExecutor execution failure")
+        .build();
+
+    final var exceptionInfo = ExceptionInfo.from(exception);
+    Assertions.assertNotNull(exceptionInfo);
+    Assertions.assertNotNull(exceptionInfo.getMessage());
+    Assertions.assertEquals(exception.getMessage(), exceptionInfo.getMessage());
+    Assertions.assertEquals(exception.getCause().getMessage(), exceptionInfo.getCauseMessage());
   }
 }
