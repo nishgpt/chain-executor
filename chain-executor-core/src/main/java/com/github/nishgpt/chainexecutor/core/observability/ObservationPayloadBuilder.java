@@ -77,6 +77,7 @@ public class ObservationPayloadBuilder {
         .getConfigParams(stage)
         .getVerbosity();
     final var methodParams = joinPoint.getArgs();
+    //TODO do deepcopy based on verbosity
     final var executionContext = extractField(methodParams, ExecutionContext.class, true);
     final var executorKey = extractField(methodParams, StageExecutorKey.class, false);
 
@@ -86,6 +87,9 @@ public class ObservationPayloadBuilder {
         .observationId(UUID.randomUUID()
             .toString())
         .observationGroupId(observationGroupId)
+        .contextId(Objects.nonNull(executionContext)
+            ? executionContext.getId()
+            : null)
         .methodName(joinPoint.getSignature()
             .getName())
         .stage(stage)
@@ -122,6 +126,7 @@ public class ObservationPayloadBuilder {
         .getConfigParams(stage)
         .getVerbosity();
     final var methodParams = joinPoint.getArgs();
+    //TODO do deepcopy based on verbosity
     final var executionContext = extractField(methodResponse, ExecutionContext.class, true);
     final var executorKey = extractField(methodParams, StageExecutorKey.class, false);
 
@@ -131,6 +136,9 @@ public class ObservationPayloadBuilder {
         .observationId(UUID.randomUUID()
             .toString()) //TODO:: check if we need to move to better/compact id convention
         .observationGroupId(observationGroupId)
+        .contextId(Objects.nonNull(executionContext)
+            ? executionContext.getId()
+            : null)
         .methodName(joinPoint.getSignature()
             .getName())
         .stage(stage)

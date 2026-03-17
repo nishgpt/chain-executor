@@ -15,6 +15,9 @@
 15. [ ] Make relevant DTOs as record
 16. [ ] Update LLD doc with the finalized design and implementation details.
 17. [ ] Remove usage of phonepe specific nomenclature and infrastructure from documents. 
+18. [ ] Execution context deep copy fix - only needed to deep copy for verbose observation verbosity
+19. [ ] Add info logs during chain executor observability startup / refresh to make sure client logs captures the bootup.
+20. [ ] In LogSink, explore possibility of enabling sanitization of sensitive data like mobile number, email id etc. 
 
 ~~Issues observed on testing : to be fixed~~ 
 ~~1. Fields coming null :~~

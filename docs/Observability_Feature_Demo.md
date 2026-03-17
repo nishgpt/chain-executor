@@ -205,6 +205,9 @@ Each observation captures:
 
 ## Integration Guide
 
+### Prerequisites
+1. The child class of ExecutionContext should have a constructor with all fields as parameters, to facilitate deep copy of the context for capturing in observation payloads. This is required only if you want to capture execution context in the observations (VERBOSE verbosity level).
+
 ### Step 1: Add Dependency
 
 ```xml
@@ -355,18 +358,19 @@ ChainExecutorObservabilityManager.refreshConfig(newConfig);
 
 ### Upcoming - V1
 
-| Feature | Description |
-|---------|-------------|
-| Storage sink | Persist observations to Aerospike for long-term storage |
-| Visualization APIs | REST APIs to query and retrieve observation data |
-| Configurable TTL | Auto-cleanup of observation data based on retention policy |
-| Per-sink ordering | Ensure chronological order within each sink |
+| Feature                     | Description                                                                       |
+|-----------------------------|-----------------------------------------------------------------------------------|
+| Origin of method invocation | Captures details around which client class and method invoked the observed method |
+| Storage sink                | Persist observations to Aerospike for long-term storage                           |
+| Visualization APIs          | REST APIs to query and retrieve observation data                                  |
+| Configurable TTL            | Auto-cleanup of observation data based on retention policy                        |
+| Per-sink ordering           | Ensure chronological order within each sink                                       |
 
 ### Future - V2
 
-| Feature | Description                                                       |
-|---------|-------------------------------------------------------------------|
-| Visual dashboard | UI to visualize execution flow and journey backed by storage sink |
+| Feature | Description                                                                                      |
+|---------|--------------------------------------------------------------------------------------------------|
+| Visual dashboard | UI (could be exposed to Ops team) to visualize execution flow and journey backed by storage sink |
 
 ### Known TODOs & Improvements
 

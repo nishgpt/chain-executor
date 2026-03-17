@@ -32,11 +32,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-//TODO:: see if need to break into after and before separate payload classes
 public abstract class ObservationPayload {
 
   private String observationId; //unique identifier for the observation
   private String observationGroupId; //ties multiple observations into one for a specific method execution
+  private String contextId; //id from execution context to tie the observation to a specific chained execution
   private ObservationPhase phase;
   private String methodName;
   private Stage stage;
