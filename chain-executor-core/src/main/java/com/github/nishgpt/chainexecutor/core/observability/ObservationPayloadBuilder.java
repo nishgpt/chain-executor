@@ -25,6 +25,7 @@ import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
 import com.github.nishgpt.chainexecutor.models.execution.StageExecutorKey;
 import com.github.nishgpt.chainexecutor.models.observability.MethodExecutionOutcome;
 import com.github.nishgpt.chainexecutor.models.observability.ObservationPhase;
+import com.github.nishgpt.chainexecutor.models.observability.ObservationVerbosity;
 import com.github.nishgpt.chainexecutor.models.observability.ObservationVerbosity.Visitor;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
 import com.github.nishgpt.chainexecutor.models.observability.payload.impl.AfterMethodInvocationPayload;
@@ -77,8 +78,8 @@ public class ObservationPayloadBuilder {
         .getConfigParams(stage)
         .getVerbosity();
     final var methodParams = joinPoint.getArgs();
-    //TODO do deepcopy based on verbosity
-    final var executionContext = extractField(methodParams, ExecutionContext.class, true);
+    final var executionContext = extractField(methodParams, ExecutionContext.class,
+        ObservationVerbosity.VERBOSE.equals(verbosity));
     final var executorKey = extractField(methodParams, StageExecutorKey.class, false);
 
     //common builder for both verbosity levels
@@ -126,8 +127,8 @@ public class ObservationPayloadBuilder {
         .getConfigParams(stage)
         .getVerbosity();
     final var methodParams = joinPoint.getArgs();
-    //TODO do deepcopy based on verbosity
-    final var executionContext = extractField(methodResponse, ExecutionContext.class, true);
+    final var executionContext = extractField(methodResponse, ExecutionContext.class,
+        ObservationVerbosity.VERBOSE.equals(verbosity));
     final var executorKey = extractField(methodParams, StageExecutorKey.class, false);
 
     //common builder for both verbosity levels
