@@ -27,6 +27,7 @@ import com.github.nishgpt.chainexecutor.models.observability.MethodExecutionOutc
 import com.github.nishgpt.chainexecutor.models.observability.ObservationPhase;
 import com.github.nishgpt.chainexecutor.models.observability.ObservationVerbosity;
 import com.github.nishgpt.chainexecutor.models.observability.ObservationVerbosity.Visitor;
+import com.github.nishgpt.chainexecutor.models.observability.payload.ExceptionInfo;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
 import com.github.nishgpt.chainexecutor.models.observability.payload.impl.AfterMethodInvocationPayload;
 import com.github.nishgpt.chainexecutor.models.observability.payload.impl.BeforeMethodInvocationPayload;
@@ -159,7 +160,7 @@ public class ObservationPayloadBuilder {
       public ObservationPayload visitVerbose() {
         return payloadBuilder
             .context(executionContext)
-            .exception((Exception) methodException)
+            .exception(ExceptionInfo.from(methodException))
             .build();
       }
     });

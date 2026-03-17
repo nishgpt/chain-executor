@@ -16,6 +16,7 @@
 package com.github.nishgpt.chainexecutor.models.observability.payload.impl;
 
 import com.github.nishgpt.chainexecutor.models.observability.MethodExecutionOutcome;
+import com.github.nishgpt.chainexecutor.models.observability.payload.ExceptionInfo;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,5 +34,5 @@ import lombok.experimental.SuperBuilder;
 public class AfterMethodInvocationPayload extends ObservationPayload {
 
   private MethodExecutionOutcome outcome;
-  private Exception exception;
+  private ExceptionInfo exception;
 }
