@@ -19,11 +19,11 @@
 19. [ ] Add info logs during chain executor observability startup / refresh to make sure client logs captures the bootup.
 20. [ ] In LogSink, explore possibility of enabling sanitization of sensitive data like mobile number, email id etc. 
 
-~~Issues observed on testing : to be fixed~~ 
-~~1. Fields coming null :~~
-   ~~1. ExecutionContext (deep copy issue, no matching constructors)~~
-   ~~2. StageStatus - either of the above necessary items are null~~
-~~Fix Extraction of Stage-
-   ~~1. first check if the stage executor is present and extract executorKeys and get one and then get stage from the executorKey~~
-   ~~2. if there is no stage executor then extract it from method params~~~~
-~~Check the logic of passing stageExecutorKey to methods like performPostCompletionSteps, the previous executor key is getting passed.~~
+Issues observed on testing : to be fixed 
+1. Fields coming null :
+   1. ExecutionContext (deep copy issue, no matching constructors)
+   2. StageStatus - either of the above necessary items are null
+2. Fix Extraction of Stage-
+   1. first check if the stage executor is present and extract executorKeys and get one and then get stage from the executorKey
+   2. if there is no stage executor then extract it from method params
+3. Check the logic of passing stageExecutorKey to methods like performPostCompletionSteps, the previous executor key is getting passed.

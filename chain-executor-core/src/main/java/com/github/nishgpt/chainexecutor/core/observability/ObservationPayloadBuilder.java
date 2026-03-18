@@ -148,6 +148,7 @@ public class ObservationPayloadBuilder {
             ? MethodExecutionOutcome.SUCCESS
             : MethodExecutionOutcome.FAILURE)
         .stageStatus(extractStageStatus(executorKey, executorFactory, executionContext))
+        .exception(ExceptionInfo.from(methodException))
         .timestampInMillis(System.currentTimeMillis());
 
     return verbosity.accept(new Visitor<>() {
@@ -160,7 +161,6 @@ public class ObservationPayloadBuilder {
       public ObservationPayload visitVerbose() {
         return payloadBuilder
             .context(executionContext)
-            .exception(ExceptionInfo.from(methodException))
             .build();
       }
     });
