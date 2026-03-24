@@ -237,13 +237,13 @@ public class ObservationPayloadBuilder {
       StageExecutorFactory executorFactory,
       ExecutionContext executionContext) {
     if (Objects.isNull(executorFactory) || Objects.isNull(executionContext) || Objects.isNull(executorKey)) {
-      log.warn("Could not extract stageStatus due to missing necessary information.");
+      log.debug("Could not extract stageStatus due to missing necessary information.");
       return null;
     }
 
     final var executor = executorFactory.getExecutor(executorKey);
     if (Objects.isNull(executor)) {
-      log.warn("Could not extract stageStatus due to null executor for executorKey: {}", executorKey);
+      log.debug("Could not extract stageStatus due to null executor for executorKey: {}", executorKey);
       return null;
     }
 

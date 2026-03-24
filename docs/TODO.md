@@ -9,17 +9,19 @@
 9. [ ] Invoker details possible to get ?
 10. [ ] When enabling storage sink, need to check how to storage will look like, as stage or execution context id may not be available for all observations.
 11. [ ] Check if we can remove lombok dependency in core module and use explicit getters/setters/constructors in the codebase to avoid any issues with AspectJ.
-12. [ ] execution id for observations where execution context is present.
+12. [x] context id for observations where execution context is present.
 13. [ ] While logging is it possible to pass the traceId also to correlate the logs with the execution flow in the service.
-14. [ ] private method access modifiers at relevant places for ObservationPayloadBuilder
-15. [ ] Make relevant DTOs as record
+14. [x] private method access modifiers at relevant places for ObservationPayloadBuilder
+15. [x] Make relevant DTOs as record - Not needed, as none found
 16. [ ] Update LLD doc with the finalized design and implementation details.
 17. [ ] Remove usage of phonepe specific nomenclature and infrastructure from documents. 
 18. [ ] Execution context deep copy fix - only needed to deep copy for verbose observation verbosity
 19. [ ] Add info logs during chain executor observability startup / refresh to make sure client logs captures the bootup.
 20. [ ] In LogSink, explore possibility of enabling sanitization of sensitive data like mobile number, email id etc. 
+21. [ ] What if client does a sync on its own and marks the state completed without actually invoking the stage execution manager. - Need to aspect relevant stage executor interface methods as well
 
-Issues observed on testing : to be fixed 
+### Issues observed on testing : 
+#### Fixed and To be re-tested 
 1. Fields coming null :
    1. ExecutionContext (deep copy issue, no matching constructors)
    2. StageStatus - either of the above necessary items are null
@@ -27,3 +29,5 @@ Issues observed on testing : to be fixed
    1. first check if the stage executor is present and extract executorKeys and get one and then get stage from the executorKey
    2. if there is no stage executor then extract it from method params
 3. Check the logic of passing stageExecutorKey to methods like performPostCompletionSteps, the previous executor key is getting passed.
+
+#### Open Issues

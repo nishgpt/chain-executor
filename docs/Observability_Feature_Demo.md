@@ -374,6 +374,7 @@ ChainExecutorObservabilityManager.refreshConfig(newConfig);
 
 ### Known TODOs & Improvements
 
+- Aspect on StageExecutor methods e.g sync()
 - Enhanced validation for observation configuration
 - Exception handling improvements to ensure observation errors don't impact business execution
 - Compact ID generation for observation IDs
