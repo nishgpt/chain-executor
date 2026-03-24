@@ -20,7 +20,7 @@ import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecuto
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-public record ObservabilityManagerState(ChainExecutorObservationConfig config,
+public record ObservabilityManagerState(ChainExecutorObservationConfig<?> config,
                                         Set<ObservationSink> sinks,
                                         ExecutorService executorService) {
 

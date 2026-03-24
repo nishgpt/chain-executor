@@ -18,14 +18,18 @@ package com.github.nishgpt.chainexecutor.core.observability;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
 import com.github.nishgpt.chainexecutor.core.observability.sink.impl.LogSink;
+import com.github.nishgpt.chainexecutor.models.error.ChainExecutorException;
+import com.github.nishgpt.chainexecutor.models.error.ErrorCode;
 import com.github.nishgpt.chainexecutor.models.observability.ChainExecutorObserver;
 import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.ObservationSinkConfigurationVisitor;
+import com.github.nishgpt.chainexecutor.models.observability.config.sink.SinkType;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.CustomSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.StorageSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
+import com.google.common.base.Preconditions;
 import com.google.inject.Injector;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,8 +37,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 
 /**
@@ -43,7 +49,8 @@ import org.reflections.Reflections;
  * refreshing of the configuration, ensuring that all components have access to the latest settings for observability
  * features.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
+@Slf4j
 public class ChainExecutorObservabilityManager {
 
   private static final Validator validator = Validation.buildDefaultValidatorFactory()
@@ -53,21 +60,28 @@ public class ChainExecutorObservabilityManager {
   public static ObjectMapper mapper;
   private static Injector injector;
 
-  public static void init(final ChainExecutorObservationConfig config,
+  public static void init(final ChainExecutorObservationConfig<?> config,
       final ObjectMapper mapper,
       final Injector injector) {
+    Preconditions.checkNotNull(mapper, "ObjectMapper cannot be null");
+    Preconditions.checkNotNull(injector, "Injector cannot be null");
+
     ChainExecutorObservabilityManager.mapper = mapper;
     ChainExecutorObservabilityManager.injector = injector;
     validate(config);
+    log.info("Init:: Observability config validated successfully, applying the config...");
     applyConfig(config);
+    log.info("Init:: Observability config applied successfully, observability is now active.");
   }
 
-  public static void refreshConfig(final ChainExecutorObservationConfig config) {
+  public static void refreshConfig(final ChainExecutorObservationConfig<?> config) {
     validate(config);
+    log.info("Refresh:: Observability config validated successfully, applying the config...");
     applyConfig(config);
+    log.info("Refresh:: Observability config applied successfully, observability is now active.");
   }
 
-  protected static ChainExecutorObservationConfig getObservationConfig() {
+  protected static ChainExecutorObservationConfig<?> getObservationConfig() {
     final var observationConfig = observabilityManagerState.get()
         .config();
     //should not be needed but adding as a fallback
@@ -84,7 +98,7 @@ public class ChainExecutorObservabilityManager {
             .submit(() -> sink.consume(payload)));
   }
 
-  private static void applyConfig(final ChainExecutorObservationConfig config) {
+  private static void applyConfig(final ChainExecutorObservationConfig<?> config) {
     ObservabilityManagerState oldState;
     //check if the new config is completely disabling the observability features.
     if (!config.isEnabled()) {
@@ -106,9 +120,40 @@ public class ChainExecutorObservabilityManager {
     }
   }
 
-  private static void validate(final ChainExecutorObservationConfig config) {
-    //TODO:: add any validation logic for the config here, e.g. if certain features are enabled, required fields must be present etc.
-    // do a thorough check on all fields injector, mapper, sinks configurations, params etc.
+  private static void validate(final ChainExecutorObservationConfig<?> config) {
+    //basic bean validations
+    final var violations = validator.validate(config);
+    if (!violations.isEmpty()) {
+      final var message = violations.stream()
+          .map(v -> String.join(" ", v.getPropertyPath()
+              .toString(), v.getMessage()))
+          .collect(Collectors.joining(", ",
+              String.format("Validations errors for %s :", ChainExecutorObservationConfig.class.getName()),
+              "."));
+      throw ChainExecutorException.error(ErrorCode.CONFIG_VALIDATION_ERROR, message);
+    }
+
+    //custom validations
+    if (config.isEnabled() && config.getEnabledSinks()
+        .isEmpty()) {
+      throw ChainExecutorException.error(ErrorCode.CONFIG_VALIDATION_ERROR,
+          "Provide at least one sink configuration when observability is enabled");
+    }
+
+    final var sinks = config.getEnabledSinks()
+        .stream()
+        .collect(Collectors.groupingBy(
+            ObservationSinkConfiguration::getSinkType));
+
+    if (config.isEnabled() && sinks.containsKey(SinkType.CUSTOM)) {
+      final var customSinkConfiguration = (CustomSinkConfiguration) sinks.get(SinkType.CUSTOM)
+          .get(0);
+      if (getCustomObserverClasses(customSinkConfiguration).size() != 1) {
+        throw ChainExecutorException.error(ErrorCode.CONFIG_VALIDATION_ERROR,
+            "Exactly one class annotated with @ChainExecutorObserver should be present in the specified package for custom sink configuration");
+      }
+    }
+
   }
 
   private static Set<ObservationSink> buildSinks(final Set<ObservationSinkConfiguration> enabledSinks) {
@@ -122,10 +167,7 @@ public class ChainExecutorObservabilityManager {
 
       @Override
       public Void visit(CustomSinkConfiguration configuration) {
-        final var reflections = new Reflections(configuration.getObserverPackage());
-        final var annotatedClasses = reflections.getTypesAnnotatedWith(ChainExecutorObserver.class);
-
-        annotatedClasses.stream()
+        getCustomObserverClasses(configuration).stream()
             .findFirst()
             .ifPresent(annotatedClass -> {
               if (ObservationSink.class.isAssignableFrom(annotatedClass)) {
@@ -143,6 +185,11 @@ public class ChainExecutorObservabilityManager {
     }));
 
     return Collections.unmodifiableSet(newSinks);
+  }
+
+  private static Set<Class<?>> getCustomObserverClasses(final CustomSinkConfiguration customSinkConfiguration) {
+    final var reflections = new Reflections(customSinkConfiguration.getObserverPackage());
+    return reflections.getTypesAnnotatedWith(ChainExecutorObserver.class);
   }
 
 }
