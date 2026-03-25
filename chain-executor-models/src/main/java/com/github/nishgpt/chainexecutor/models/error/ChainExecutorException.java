@@ -19,9 +19,11 @@ import java.io.Serial;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class ChainExecutorException extends RuntimeException {
 
   @Serial
@@ -42,7 +44,8 @@ public class ChainExecutorException extends RuntimeException {
     return new ChainExecutorException(errorCode, ERROR_OCCURRED_MESSAGE, null);
   }
 
-  public static ChainExecutorException error(final ErrorCode errorCode, final String message) {
+  public static ChainExecutorException error(final ErrorCode errorCode,
+      final String message) {
     return new ChainExecutorException(errorCode, message, null);
   }
 
