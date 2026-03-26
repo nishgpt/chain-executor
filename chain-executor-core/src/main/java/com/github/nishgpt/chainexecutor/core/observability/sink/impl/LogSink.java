@@ -20,15 +20,18 @@ import com.github.nishgpt.chainexecutor.core.observability.sink.ObservationSink;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogLevel.Visitor;
 import com.github.nishgpt.chainexecutor.models.observability.config.sink.impl.LogSinkConfiguration;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ObservationPayload;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
-@AllArgsConstructor
 public class LogSink implements ObservationSink {
 
+    private static final Logger log = LoggerFactory.getLogger(LogSink.class.getName());
     private static final String LOG_MESSAGE = "Observation consumed {}";
     private final LogSinkConfiguration configuration;
+
+    public LogSink(final LogSinkConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
     @Override
     public void consume(final ObservationPayload payload) {

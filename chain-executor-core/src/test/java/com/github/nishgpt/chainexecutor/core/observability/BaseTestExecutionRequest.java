@@ -17,15 +17,7 @@ package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
-@Data
-@AllArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode
 public abstract class BaseTestExecutionRequest implements StageExecutionRequest {
 
   public abstract Stage getStage();

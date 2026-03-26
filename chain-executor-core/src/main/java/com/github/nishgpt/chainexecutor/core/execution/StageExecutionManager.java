@@ -27,20 +27,25 @@ import com.github.nishgpt.chainexecutor.models.stage.Stage;
 import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
 import com.github.nishgpt.chainexecutor.models.stage.StageStatus;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.SuperBuilder;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
-@AllArgsConstructor
-@SuperBuilder
 @SuppressWarnings("rawtypes")
 public abstract class StageExecutionManager<T extends Stage, U extends ExecutionContext, V extends StageExecutionRequest, K extends ExecutorAuxiliaryKey, C extends StageChainIdentifier> {
 
-  @Getter
+  private static final Logger log = LoggerFactory.getLogger(StageExecutionManager.class.getName());
   private final StageChainRegistry<T, C> chainRegistry;
   private final StageExecutorFactory executorFactory;
+
+  public StageExecutionManager(final StageChainRegistry<T, C> chainRegistry,
+      final StageExecutorFactory executorFactory) {
+    this.chainRegistry = chainRegistry;
+    this.executorFactory = executorFactory;
+  }
+
+  public StageChainRegistry<T, C> getChainRegistry() {
+    return this.chainRegistry;
+  }
 
   @SuppressWarnings("unchecked")
   @ObservedMethod(criticality = MethodCriticality.CRITICAL)

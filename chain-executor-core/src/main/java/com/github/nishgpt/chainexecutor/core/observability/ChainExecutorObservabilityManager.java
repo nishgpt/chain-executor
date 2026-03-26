@@ -40,8 +40,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manager class for Chain Executor Observability feature. This class is responsible for holding the current
@@ -50,9 +51,9 @@ import org.reflections.Reflections;
  * features.
  */
 @SuppressWarnings({"rawtypes"})
-@Slf4j
 public class ChainExecutorObservabilityManager {
 
+  private static final Logger log = LoggerFactory.getLogger(ChainExecutorObservabilityManager.class.getName());
   private static final Validator validator = Validation.buildDefaultValidatorFactory()
       .getValidator();
   private static final AtomicReference<ObservabilityManagerState> observabilityManagerState = new AtomicReference<>(

@@ -16,17 +16,24 @@
 package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
-@Data
-@EqualsAndHashCode(callSuper = true)
 public class TestStageExecutionRequest extends BaseTestExecutionRequest {
 
   private String requestId;
   private String payload;
+
+  public TestStageExecutionRequest(String requestId, String payload) {
+    this.requestId = requestId;
+    this.payload = payload;
+  }
+
+  public String getRequestId() {
+    return requestId;
+  }
+
+  public String getPayload() {
+    return payload;
+  }
 
   @Override
   public Stage getStage() {

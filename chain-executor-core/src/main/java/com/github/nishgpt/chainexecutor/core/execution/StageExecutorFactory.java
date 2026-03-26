@@ -21,10 +21,8 @@ import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 import java.lang.annotation.Annotation;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 
-@Slf4j
 @SuppressWarnings("rawtypes")
 public abstract class StageExecutorFactory<A extends Annotation> {
 

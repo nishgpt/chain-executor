@@ -23,18 +23,17 @@ import java.util.Map;
 
 public class BaseTest {
 
-  protected static final TestStageExecutionRequest REQUEST = TestStageExecutionRequest.builder()
-      .requestId("REQ123")
-      .payload("Test Payload")
-      .build();
+  protected static final TestStageExecutionRequest REQUEST = new TestStageExecutionRequest(
+      "REQ123",
+      "Test Payload"
+  );
 
-  protected static final TestExecutionContext EXECUTION_CONTEXT = TestExecutionContext.builder()
-      .id("APP123")
-      .applicationId("APP123")
-      .applicationStatus("IN_PROGRESS")
-      .stageStatus(
-          Map.of(TestStage.STAGE1, "COMPLETED", TestStage.STAGE2, "IN_PROGRESS", TestStage.STAGE3, "NOT_INITIATED"))
-      .build();
+  protected static final TestExecutionContext EXECUTION_CONTEXT = new TestExecutionContext(
+      "APP123",
+      "APP123",
+      "IN_PROGRESS",
+      Map.of(TestStage.STAGE1, "COMPLETED", TestStage.STAGE2, "IN_PROGRESS", TestStage.STAGE3, "NOT_INITIATED")
+  );
 
   protected static final ObjectMapper MAPPER = new ObjectMapper();
 }

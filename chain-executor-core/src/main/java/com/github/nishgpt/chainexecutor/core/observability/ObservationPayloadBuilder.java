@@ -38,12 +38,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class ObservationPayloadBuilder {
 
+  private static final Logger log = LoggerFactory.getLogger(ObservationPayloadBuilder.class.getName());
   private static MethodHandle EXECUTOR_FACTORY_GETTER;
 
   static {

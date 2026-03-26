@@ -16,15 +16,7 @@
 package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Builder
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class TestAuxiliaryKey implements ExecutorAuxiliaryKey {
 
   private String key;

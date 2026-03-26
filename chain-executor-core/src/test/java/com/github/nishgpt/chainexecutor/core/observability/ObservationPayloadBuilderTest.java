@@ -20,12 +20,10 @@ import com.github.nishgpt.chainexecutor.models.error.ChainExecutorException;
 import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
 import com.github.nishgpt.chainexecutor.models.observability.config.ChainExecutorObservationConfig;
 import com.github.nishgpt.chainexecutor.models.observability.payload.ExceptionInfo;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@Slf4j
 class ObservationPayloadBuilderTest extends BaseTest {
 
   @BeforeEach
@@ -53,6 +51,7 @@ class ObservationPayloadBuilderTest extends BaseTest {
     Assertions.assertNotNull(exceptionInfo);
     Assertions.assertNotNull(exceptionInfo.getMessage());
     Assertions.assertEquals(exception.getMessage(), exceptionInfo.getMessage());
-    Assertions.assertEquals(exception.getCause().getMessage(), exceptionInfo.getCauseMessage());
+    Assertions.assertEquals(exception.getCause()
+        .getMessage(), exceptionInfo.getCauseMessage());
   }
 }

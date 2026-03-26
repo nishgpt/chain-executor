@@ -17,20 +17,29 @@ package com.github.nishgpt.chainexecutor.core.observability;
 
 import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 public class TestExecutionContext extends ExecutionContext {
 
   private String applicationId;
   private String applicationStatus;
   private Map<TestStage, String> stageStatus;
+
+  public TestExecutionContext(String id, String applicationId, String applicationStatus, Map<TestStage, String> stageStatus) {
+    super(id);
+    this.applicationId = applicationId;
+    this.applicationStatus = applicationStatus;
+    this.stageStatus = stageStatus;
+  }
+
+  public String getApplicationId() {
+    return applicationId;
+  }
+
+  public String getApplicationStatus() {
+    return applicationStatus;
+  }
+
+  public Map<TestStage, String> getStageStatus() {
+    return stageStatus;
+  }
 }

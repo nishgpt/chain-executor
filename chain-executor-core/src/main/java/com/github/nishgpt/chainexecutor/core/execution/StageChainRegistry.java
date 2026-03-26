@@ -23,11 +23,13 @@ import com.github.nishgpt.chainexecutor.models.stage.StageChainIdentifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class StageChainRegistry<T extends Stage, K extends StageChainIdentifier> extends
     HashMap<K, StageChain<T>> {
+
+  private static final Logger log = LoggerFactory.getLogger(StageChainRegistry.class.getName());
 
   public StageChain<T> getStageChain(K chainIdentifier) {
     return this.get(chainIdentifier);
