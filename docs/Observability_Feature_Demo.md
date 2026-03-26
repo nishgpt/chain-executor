@@ -20,7 +20,7 @@
 
 The **Chain Executor Observability** is a new feature designed to provide method-level tracing and debugging capabilities for applications using the chain-executor library. It enables developers and on-call engineers to gain visibility into the execution flow of staged workflows without requiring manual log instrumentation.
 
-**Current Version:** `0.1.0-OB-ALPHA3` (Alpha - Ready for internal testing)
+**Current Version:** `0.1.0-OB-ALPHA4` (Alpha - Ready for internal testing)
 
 ---
 
@@ -214,7 +214,7 @@ Each observation captures:
 <dependency>
     <groupId>com.github.nishgpt</groupId>
     <artifactId>chain-executor-core</artifactId>
-    <version>0.1.0-OB-ALPHA3</version>
+    <version>0.1.0-OB-ALPHA4</version>
 </dependency>
 ```
 
@@ -395,7 +395,7 @@ ChainExecutorObservabilityManager.refreshConfig(newConfig);
 
 ### Quick Start Checklist
 
-- [ ] Add `chain-executor-core:0.1.0-OB-ALPHA3` dependency
+- [ ] Add `chain-executor-core:0.1.0-OB-ALPHA4` dependency
 - [ ] Initialize `ChainExecutorObservabilityManager` at startup
 - [ ] Configure desired depth and verbosity
 - [ ] Enable at least one sink (LogSink for basic setup)

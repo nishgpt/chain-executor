@@ -8,7 +8,7 @@
 8. [x] Update the cached stage executor factory impl to MethodHandle instead of Field
 9. [ ] Invoker details possible to get ?
 10. [ ] When enabling storage sink, need to check how to storage will look like, as stage or execution context id may not be available for all observations.
-11. [ ] Check if we can remove lombok dependency in core module and use explicit getters/setters/constructors in the codebase to avoid any issues with AspectJ.
+11. [x] Check if we can remove lombok dependency in core module and use explicit getters/setters/constructors in the codebase to avoid any issues with AspectJ.
 12. [x] context id for observations where execution context is present.
 13. [ ] While logging is it possible to pass the traceId also to correlate the logs with the execution flow in the service.
 14. [x] private method access modifiers at relevant places for ObservationPayloadBuilder
