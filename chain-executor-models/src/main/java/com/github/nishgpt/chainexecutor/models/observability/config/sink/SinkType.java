@@ -20,5 +20,7 @@ public enum SinkType {
   CUSTOM,
   STORAGE,
   ;
-  //TODO:: add string constants
+  public static final String LOG_TEXT = "LOG";
+  public static final String CUSTOM_TEXT = "CUSTOM";
+  public static final String STORAGE_TEXT = "STORAGE";
 }

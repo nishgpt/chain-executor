@@ -180,8 +180,7 @@ public class ChainExecutorObservabilityManager {
 
       @Override
       public Void visit(StorageSinkConfiguration configuration) {
-        //TODO:: implement StorageSink and add to newSinks
-        return null;
+        throw new UnsupportedOperationException("Storage sink is not supported yet");
       }
     }));
 

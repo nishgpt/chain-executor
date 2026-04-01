@@ -16,9 +16,11 @@
 package com.github.nishgpt.chainexecutor.core.observability;
 
 import static com.github.nishgpt.chainexecutor.core.observability.ChainExecutorObservabilityManager.mapper;
+import static com.github.nishgpt.chainexecutor.core.observability.utils.IdGenerationUtils.OBSERVATION_ID_PREFIX;
 
 import com.github.nishgpt.chainexecutor.core.execution.StageExecutionManager;
 import com.github.nishgpt.chainexecutor.core.execution.StageExecutorFactory;
+import com.github.nishgpt.chainexecutor.core.observability.utils.IdGenerationUtils;
 import com.github.nishgpt.chainexecutor.models.execution.ExecutionContext;
 import com.github.nishgpt.chainexecutor.models.execution.ExecutorAuxiliaryKey;
 import com.github.nishgpt.chainexecutor.models.execution.StageExecutionRequest;
@@ -136,8 +138,8 @@ public class ObservationPayloadBuilder {
     //common builder for both verbosity levels
     final var payloadBuilder = AfterMethodInvocationPayload.builder()
         .phase(ObservationPhase.AFTER_METHOD_INVOCATION)
-        .observationId(UUID.randomUUID()
-            .toString()) //TODO:: check if we need to move to better/compact id convention
+        .observationId(IdGenerationUtils.getId(
+            OBSERVATION_ID_PREFIX))
         .observationGroupId(observationGroupId)
         .contextId(Objects.nonNull(executionContext)
             ? executionContext.getId()

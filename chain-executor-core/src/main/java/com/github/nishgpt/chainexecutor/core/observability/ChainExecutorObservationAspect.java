@@ -20,12 +20,13 @@ import static com.github.nishgpt.chainexecutor.core.observability.ObservationPay
 import static com.github.nishgpt.chainexecutor.core.observability.ObservationPayloadBuilder.extractStage;
 import static com.github.nishgpt.chainexecutor.core.observability.ObservationPayloadBuilder.prepareAfterPayload;
 import static com.github.nishgpt.chainexecutor.core.observability.ObservationPayloadBuilder.prepareBeforePayload;
+import static com.github.nishgpt.chainexecutor.core.observability.utils.IdGenerationUtils.OBSERVATION_GROUP_ID_PREFIX;
 
+import com.github.nishgpt.chainexecutor.core.observability.utils.IdGenerationUtils;
 import com.github.nishgpt.chainexecutor.models.observability.MethodCriticality;
 import com.github.nishgpt.chainexecutor.models.observability.ObservedMethod;
 import com.github.nishgpt.chainexecutor.models.stage.Stage;
 import java.util.Objects;
-import java.util.UUID;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -79,10 +80,9 @@ public class ChainExecutorObservationAspect {
 
   private String getObservationGroupId(boolean isRootInvocation) {
     if (isRootInvocation) {
-      GROUPING_ID.set(UUID.randomUUID()
-          .toString());
+      GROUPING_ID.set(IdGenerationUtils.getId(OBSERVATION_GROUP_ID_PREFIX));
     }
-    return GROUPING_ID.get(); //TODO:: check if we need to move to better/compact id convention
+    return GROUPING_ID.get();
   }
 
   private boolean skipObservation(final Stage stage,

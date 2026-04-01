@@ -15,7 +15,6 @@
  */
 package com.github.nishgpt.chainexecutor.models.observability;
 
-//TODO:: better description for each enum value
 public enum ObservationVerbosity {
   //Will capture basic details only
   BASIC {

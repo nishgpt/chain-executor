@@ -39,9 +39,9 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "sinkType", visible = true)
 @JsonSubTypes({
-    @Type(value = LogSinkConfiguration.class, name = "LOG"),
-    @Type(value = CustomSinkConfiguration.class, name = "CUSTOM"),
-    @Type(value = StorageSinkConfiguration.class, name = "STORAGE"),
+    @Type(value = LogSinkConfiguration.class, name = SinkType.LOG_TEXT),
+    @Type(value = CustomSinkConfiguration.class, name = SinkType.CUSTOM_TEXT),
+    @Type(value = StorageSinkConfiguration.class, name = SinkType.STORAGE_TEXT),
 })
 public abstract class ObservationSinkConfiguration {
 

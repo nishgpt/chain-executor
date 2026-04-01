@@ -76,6 +76,7 @@
     <jakarta.el.version>3.0.0</jakarta.el.version>
     <jackson.databind.version>2.15.2</jackson.databind.version>
     <junit-bom.version>5.8.2</junit-bom.version>
+    <nanoid.version>2.0.0</nanoid.version>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
