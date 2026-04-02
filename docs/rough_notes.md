@@ -1,7 +1,7 @@
 Rough idea/notes
 
 1. As of now, users of chain-executor expose an api which gives the latest snapshot of the entire workflow, from this oncalls/devs get to see only the current state of the application and not how the user moved along the journey.
-2. To be able to debug an entire journey, oncalls have to browse application update events through foxtrot and grep through logs from some reference timestamp and search for application id / mid / userid etc. and then track manually on how the user moved, what exceptions were encountered and back and forth happened.
+2. To be able to debug an entire journey, oncalls have to browse application update events through events-system and grep through logs from some reference timestamp and search for application id / mid / userid etc. and then track manually on how the user moved, what exceptions were encountered and back and forth happened.
 3. The idea is to come up with an observability module in chain-executor framework, which can track at a user/application level what stage was invoked with what action (execute, resume, sync) at what time along with who invoked it. Idea is to track it along with the request level information, pre execution context and post execution context.
 4. The module may use storage of the underlying service to make sure data resides locally and does not pose any compliance issues.
 5. This idea can be extended to other used workflow frameworks like Nornet as well.
@@ -9,7 +9,7 @@ Rough idea/notes
 7. The plan is to start with a basic poc and see whether there is goodness.
 8. possible sinks for the observability data 
    1. storage layer of the underlying client, aerospike mostly
-   2. a method call which can be implemented by client to send it as events to foxtrot (or similar) system
+   2. a method call which can be implemented by client to send it as events to events-monitoring system
    3. a default logger implementation, which will be provided as a part of the module, which will print these as debug logs.
 
 Phases/versions with features
@@ -37,7 +37,7 @@ Once storage sink is enabled, below items can be incorporated in V2
 Pros
 1. Clients (primarily the LOS systems of ML, CL, SL) can shave off some of the redundant logs regarding the chain executor flow.
 2. If storage sink is enabled it can help build confidence with the above observability and log less from the application side if the use-case for debugging is along the lines of application lifecycle (30-60days).
-3. Better productivity for L1-oncall if the use-case is to quickly debug what happened with the user along with the actions performed, and remove dependencies from application generated foxtrot events and logs.
+3. Better productivity for L1-oncall if the use-case is to quickly debug what happened with the user along with the actions performed, and remove dependencies from application generated events and logs.
 4. When live debugger mode is supported and enabled it can help figure out issues during runtime much faster.
 
 Cons

@@ -17,8 +17,9 @@
 17. [ ] Remove usage of phonepe specific nomenclature and infrastructure from documents. 
 18. [x] Execution context deep copy fix - only needed to deep copy for verbose observation verbosity
 19. [x] Add info logs during chain executor observability startup / refresh to make sure client logs captures the bootup.
-20. [ ] In LogSink, explore possibility of enabling sanitization of sensitive data like mobile number, email id etc. 
+20. [ ] Explore possibility of enabling sanitization of sensitive data like mobile number, email id etc. - either provide basic sanitization out of the box or provide an interface for clients to implement their own sanitization logic. 
 21. [ ] What if client does a sync on its own and marks the state completed without actually invoking the stage execution manager. - Need to aspect relevant stage executor interface methods as well
+22. [ ] If verbosity is enabled - support for data isolation and tenancy.
 
 ### Issues observed on testing : 
 #### Fixed and To be re-tested 

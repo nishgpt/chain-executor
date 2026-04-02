@@ -378,6 +378,7 @@ ChainExecutorObservabilityManager.refreshConfig(newConfig);
 - Enhanced validation for observation configuration
 - Exception handling improvements to ensure observation errors don't impact business execution
 - Compact ID generation for observation IDs
+- Support for configuring verbosity and depth based on Sink as well as stages
 - Support for traceId correlation with existing logging infrastructure
 
 ---
