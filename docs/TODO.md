@@ -14,7 +14,7 @@
 14. [x] private method access modifiers at relevant places for ObservationPayloadBuilder
 15. [x] Make relevant DTOs as record - Not needed, as none found
 16. [ ] Update LLD doc with the finalized design and implementation details.
-17. [ ] Remove usage of phonepe specific nomenclature and infrastructure from documents. 
+17. [x] Remove usage of phonepe specific nomenclature and infrastructure from documents. 
 18. [x] Execution context deep copy fix - only needed to deep copy for verbose observation verbosity
 19. [x] Add info logs during chain executor observability startup / refresh to make sure client logs captures the bootup.
 20. [ ] Explore possibility of enabling sanitization of sensitive data like mobile number, email id etc. - either provide basic sanitization out of the box or provide an interface for clients to implement their own sanitization logic. 
