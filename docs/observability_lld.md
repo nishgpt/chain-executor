@@ -188,6 +188,40 @@ public class ChainExecutorObservationAspect {
 }
 ```
 
+#### Aspect Implementation for StageExecutor
+
+**Typical Approach for Aspecting Interface Methods**
+
+When aspecting interface methods like those in `StageExecutor`, the pointcut needs to target the implementing classes (in client code):
+
+```java
+@Aspect
+public class StageExecutorObservabilityAspect {
+
+    // Matches any implementation of StageExecutor methods
+    @Around("execution(* com.github.nishgpt.chainexecutor.core.execution.StageExecutor+.execute(..))")
+    public Object aroundExecute(ProceedingJoinPoint joinPoint) throws Throwable {
+        // Extract invoker from stack
+        String invoker = extractInvokerInfo();
+        
+        // Build observation payload
+        // ...
+        
+        return joinPoint.proceed();
+    }
+
+    // Similar for other methods: init, fetchInfo, preExecute, resume, postExecution
+    @Around("execution(* com.github.nishgpt.chainexecutor.core.execution.StageExecutor+.init(..))")
+    public Object aroundInit(ProceedingJoinPoint joinPoint) throws Throwable {
+        // ...
+    }
+}
+```
+
+**Key Point: The `+` Symbol**
+
+The `StageExecutor+` syntax means "StageExecutor **and all its implementations**"—this is how the aspect weaves into client code that implements the interface.
+
 ### Extracting Method Information from JoinPoint
 
 | Information | How to Extract |
@@ -225,6 +259,67 @@ StageExecutorFactory factory = (StageExecutorFactory) EXECUTOR_FACTORY_GETTER.in
 | Cached reflection | ~50-200 ns |
 | Cached MethodHandle | ~10-30 ns |
 | Direct getter | ~5-20 ns |
+
+### Extracting Invoker Information
+
+Based on requirement, if we want to capture the **originating API/entry point method** (like `ClientResource.executeStage()`) rather than the immediate caller (like `ClientBaseApplicationManager.execute()`).
+
+#### Solution: Capture the First Non-Library Frame from Bottom of Stack
+
+Instead of taking the first match (immediate caller), take the **last match** before JDK/framework entry points:
+
+```java
+private static InvokerInfo extractOriginatingCaller() {
+    return StackWalker.getInstance()
+        .walk(frames -> {
+            List<StackWalker.StackFrame> clientFrames = frames
+                .filter(f -> !isLibraryOrFrameworkFrame(f.getClassName()))
+                .toList();
+
+            // Return the last client frame (closest to entry point)
+            if (clientFrames.isEmpty()) {
+                return null;
+            }
+            StackWalker.StackFrame origin = clientFrames.get(clientFrames.size() - 1);
+            return InvokerInfo.builder()
+                .className(origin.getClassName())
+                .methodName(origin.getMethodName())
+                .fileName(origin.getFileName())
+                .lineNumber(origin.getLineNumber())
+                .build();
+        });
+}
+
+private static boolean isLibraryOrFrameworkFrame(String className) {
+    return className.startsWith("java.") ||
+           className.startsWith("jdk.") ||
+           className.startsWith("sun.") ||
+           className.startsWith("org.springframework.") ||
+           className.startsWith("org.aspectj.") ||
+           className.startsWith("jakarta.") ||
+           className.startsWith("javax.") ||
+           className.startsWith("com.sun.") ||
+           className.startsWith("com.github.nishgpt.chainexecutor.");
+}
+```
+
+#### What This Returns
+
+For your flow:
+```
+[Framework] → ClientResource.executeStage() → ClientApplicationService.executeStage() → ClientBaseApplicationManager.execute() → StageExecutionManager.execute()
+```
+
+| Field | Value |
+|-------|-------|
+| `className` | `com.yourcompany.app.ClientResource` |
+| `methodName` | `executeStage` |
+| `fileName` | `ClientResource.java` |
+| `lineNumber` | (line in the API method) |
+
+#### Trade-off
+
+This requires walking the **entire client stack** (not early termination), so slightly more overhead (~5-15 μs instead of ~2-5 μs). Still negligible for `VERBOSE` mode.
 
 ---
 

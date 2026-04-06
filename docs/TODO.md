@@ -1,9 +1,9 @@
-1. [ ] observation listeners, with exception handling
+1. [x] observation listeners (sink), with exception handling
 2. [x] Singular layer for registering and deregistering listeners, with support for multiple listeners.
 3. [x] core logic of constructing the observation payload and dispatching to listeners
 4. [x] Adding logic for parent and child method invocations when using GRANULAR observation depth - solved via group id
 5. [x] Facilitate the validation for the observation configuration
-6. [ ] Check wherever observation error exception is absolutely needed or we can just log the error and move on, to avoid any unintended consequences of throwing exceptions from observation listeners.
+6. [x] Check wherever observation error exception is absolutely needed or we can just log the error and move on, to avoid any unintended consequences of throwing exceptions from observation listeners.
 7. [ ] Ordering of observation for a specific sink should be ensured - use sink based single threaded executors with a bounded-queue to ensure ordering of events for a specific sink, while allowing parallel processing across different sinks.
 8. [x] Update the cached stage executor factory impl to MethodHandle instead of Field
 9. [ ] Invoker details possible to get ?
@@ -19,7 +19,7 @@
 19. [x] Add info logs during chain executor observability startup / refresh to make sure client logs captures the bootup.
 20. [ ] Explore possibility of enabling sanitization of sensitive data like mobile number, email id etc. - either provide basic sanitization out of the box or provide an interface for clients to implement their own sanitization logic. 
 21. [ ] What if client does a sync on its own and marks the state completed without actually invoking the stage execution manager. - Need to aspect relevant stage executor interface methods as well
-22. [ ] If verbosity is enabled - support for data isolation and tenancy.
+22. [ ] If verbosity is enabled and storage sink is enabled - support for data isolation and tenancy. - either introduce tenancy or keep short-lived TTL - 30 days 
 
 ### Issues observed on testing : 
 #### Fixed and To be re-tested 
