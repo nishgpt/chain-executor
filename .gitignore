@@ -2,3 +2,6 @@
 /chain-executor.iml
 /target/
 .DS_Store
+*.iml
+*.ipr
+*.iws
