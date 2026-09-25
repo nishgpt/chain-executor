@@ -117,6 +117,14 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   public U initNext(StageExecutorKey<T, K> stageExecutorKey, C chainIdentifier, U context) {
 
     try {
+      // Chain identifier/auxiliary key may have changed mid-flow (e.g. context enrichment); re-resolve and rebuild the key if so
+      chainIdentifier = resolveChainIdentifier(context, chainIdentifier);
+      final var auxiliaryKey = resolveAuxiliaryKey(context, stageExecutorKey.getAuxiliaryKey());
+
+      if (!Objects.equals(auxiliaryKey, stageExecutorKey.getAuxiliaryKey())) {
+        stageExecutorKey = buildStageExecutorKey(stageExecutorKey.getStage(), auxiliaryKey);
+      }
+
       sweepForward(stageExecutorKey, chainIdentifier, context);
 
       // Sweeping forward may have caused invalidation of some previous stage(s), hence recomputing next stage from chain head
@@ -188,11 +196,7 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
   }
 
   protected StageExecutor getExecutor(T stage, K auxiliaryKey) {
-    final var executorKey = StageExecutorKey.<T, K>builder()
-        .stage(stage)
-        .auxiliaryKey(auxiliaryKey)
-        .build();
-    return executorFactory.getExecutor(executorKey);
+    return executorFactory.getExecutor(buildStageExecutorKey(stage, auxiliaryKey));
   }
 
   @SuppressWarnings("unchecked")
@@ -209,6 +213,14 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
       }
       currentStage = chainRegistry.getNextStage(chainIdentifier, currentStage);
     }
+  }
+
+  protected C resolveChainIdentifier(U context, C chainIdentifier) {
+    return chainIdentifier;
+  }
+
+  protected K resolveAuxiliaryKey(U context, K auxiliaryKey) {
+    return auxiliaryKey;
   }
 
   @SuppressWarnings("unchecked")
@@ -279,5 +291,12 @@ public abstract class StageExecutionManager<T extends Stage, U extends Execution
     log.warn("Skipping execution of {} Stage for id - {}. Conflicting Current Status: {} & Pre-execution Status: {}",
         stageExecutorKey.getStage(), context.getId(), executor.getStageStatus(context), preExecutionResponse.getStatus());
     return context;
+  }
+
+  private StageExecutorKey<T, K> buildStageExecutorKey(T stage, K auxiliaryKey) {
+    return StageExecutorKey.<T, K>builder()
+        .stage(stage)
+        .auxiliaryKey(auxiliaryKey)
+        .build();
   }
 }
