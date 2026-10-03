@@ -7,6 +7,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    outputs:
+      snapshot-version: ${{ steps.build_version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,15 +18,23 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'maven' # Automatically caches ~/.m2 dependencies
+          cache: 'maven'
 
-      - name: Run Maven build and tests
-        run: mvn clean verify
+      - name: Read project version from pom.xml
+        id: version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
 
-  deploy-to-clojars:
+      - name: Build snapshot version
+        id: build_version
+        run: echo "version=${{ steps.version.outputs.version }}-SNAPSHOT" >> "$GITHUB_OUTPUT"
+
+      - name: Build and test snapshot artifact
+        run: mvn clean verify -Drevision=${{ steps.build_version.outputs.version }}
+
+  deploy-snapshot-to-clojars:
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.base_ref == 'release_candidate'
 
     steps:
       - name: Checkout repository
@@ -35,13 +45,21 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'maven' # Automatically caches ~/.m2 dependencies
-          server-id: clojars # Generates maven settings.xml entry for <id>clojars</id>
+          cache: 'maven'
+          server-id: clojars
           server-username: CLOJARS_USERNAME
           server-password: CLOJARS_PASSWORD
+
+      - name: Read project version from pom.xml
+        id: version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
+
+      - name: Build snapshot version
+        id: build_version
+        run: echo "version=${{ steps.version.outputs.version }}-SNAPSHOT" >> "$GITHUB_OUTPUT"
 
       - name: Deploy artifact to Clojars
         env:
           CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
           CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
-        run: mvn deploy
+        run: mvn deploy -Drevision=${{ steps.build_version.outputs.version }} -DskipTests
