@@ -18,13 +18,5 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Read project version from pom.xml
-        id: version
-        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
-
-      - name: Build snapshot version
-        id: build_version
-        run: echo "version=${{ steps.version.outputs.version }}-SNAPSHOT" >> "$GITHUB_OUTPUT"
-
-      - name: Build and test snapshot artifact
-        run: mvn clean verify -Drevision=${{ steps.build_version.outputs.version }}
+      - name: Build and test artifact
+        run: mvn clean verify
